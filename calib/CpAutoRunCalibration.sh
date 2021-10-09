@@ -11,7 +11,7 @@ dnend=975
 # envpath=/junofs/users/jiangw/J21v1r0-Pre0
 ntimesrms="--NTimesRMS 2.2"
 
-copyPath=/junofs/users/jiangw/jw_tutorial/new_FFT
+copyPath=/junofs/users/jiangw/GitCode/JUNOOfflineProcess/calib
 dnlen=$(($dnend-$dnstart))
 
 rsync -av $copyPath/* .
