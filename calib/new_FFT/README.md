@@ -9,10 +9,13 @@ Important:
 Problem:
     How to make filter more stable and reliable?
 
+2021.10.11:
+    I think auto-run is OK now
+
 <!-- What you need to prepare:
     6 sources' elecsim root file list to dir(./Elecsim_path)
         (AmC Ge68 Co60 Cs137 Laser0.1 Laser0.05)_elec.list + forceTrigger_elec.list -->
-Make sure correctly modify those variables in CpAutoRunCalibration.sh
+********** Make sure correctly modify those variables in CpAutoRunCalibration.sh ************
     
 Step choose from: (01 02 03 04 1 2 3 4 11 12 13 14)
     
@@ -37,6 +40,12 @@ After running 04:(!!!important!!!)
 
 Notes for steps:
 TimeOffset:
-
+    Use Laser(μ~0.1) source to get each PMT's first hit time distribution, Gaussian fit the peak to get average timeOffset, and minus the mean value to get timeOffset parameters.
 step01:
-    Use simple integral method to get each PMT's charge distribution, near 
+    Use simple integral method to get each PMT's charge distribution from Ge68 source, charge near 0 is noise, Gaussian fit the next peak to get SPE μ and σ.
+step02:
+    Use μ and σ from step01 to extract waveforms in (μ-1.5σ, μ+1.5σ), average those waveforms to get SPE spectra.
+step03:
+    Extract waveforms from Ge68 source(100k/file).
+step04:
+    Generate filter using waveforms from step03, and see relative distribution: pulse width, pulse amplitude, Gibbs effect, noise/signal versus amplitude threshold.

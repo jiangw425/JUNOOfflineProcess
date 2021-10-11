@@ -24,7 +24,7 @@ void merge()
     if (i == 17612) break;
   file.close();
   // mean
-  TFile* f = new TFile("../C14/step12/user-root/user_calibCorr.root", "read");
+  TFile* f = new TFile("../SCSSN/step12/user-root/user_calibCorr.root", "read");
   TH1F* spe;
   double spem[17612];
   for (int i = 0; i < 17612; i++) {

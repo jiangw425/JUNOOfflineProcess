@@ -3,6 +3,9 @@ junoenv=/cvmfs/juno.ihep.ac.cn/centos7_amd64_gcc830/Pre-Release/J21v1r0-Pre2/set
 yourenv=/junofs/users/jiangw/J21v1r0-Pre2/bashrc
 elecpath=/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/11
 ### --- Please modify the variables above. --- ###
+###  junoenv: official juno offline env setup  ###
+###  yourenv: your relative copied from trunk  ###
+###  elecpath: path includes the elecsim files ### not important
 
 envpath=`echo ${yourenv%/*}`
 dnstart=725

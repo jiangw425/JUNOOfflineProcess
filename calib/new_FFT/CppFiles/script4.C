@@ -19,7 +19,7 @@ bool script4()
   // FIXME merged files
   TFile* inputfile = new TFile("../Laser0.1/step12/user-root/user_calibCorr.root", "read");
   // TFile* inputfile2 = new TFile("/junofs/users/zhangxt/20inch/rec/deconvolution/runs/pars20200504/output_deconv.root", "read");
-  TFile* inputfile2 = new TFile("../forceTrigger/step12/user-root/user_calibCorr.root", "read");
+  TFile* inputfile2 = new TFile("../SCSSN/step12/user-root/user_calibCorr.root", "read");
 
   TH1D* muth = new TH1D("muth", "Total PMT #mu", Npmt, 0, Npmt);
   TH1D* muHth = new TH1D("muHth", "Dynode PMT #mu", Npmt, 0, Npmt);

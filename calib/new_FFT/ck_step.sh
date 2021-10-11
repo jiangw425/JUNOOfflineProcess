@@ -3,7 +3,8 @@ if [[ $#<=0 ]]; then
     echo "You have not input step number."
     exit 1
 fi
-steps=(01 02 03 04 1 2 3 4 11 12 13 14)
+# 8/9 for TimeOffset
+steps=(01 02 03 04 1 2 3 4 11 12 13 14 8 9)
 if [[ ! ${steps[@]} =~ $1 ]];then
     echo "Wrong input step number."
     exit 1
@@ -22,10 +23,12 @@ checkExist(){
 if [[ ${1:0:1} -eq 0 ]];then
     # sname=(forceTrigger Ge68)
     sname=(Ge68)
+elif [[ $1 -eq 8 ]];then
+    sname=(Laser0.1)
 elif [[ $1 -lt 10 ]];then
     sname=(AmC Ge68 Co60 Cs137 Laser0.1 Laser0.05)
 elif [[ $1 -gt 10 ]];then
-    sname=(forceTrigger Laser0.1)
+    sname=(C14 Laser0.1 Laser0.05)
 fi
 
 echo -e "`date`. Check step $1 jobs status: \c"
@@ -50,17 +53,31 @@ case $1 in
     01|02|03|1|2|11|12)
         for s in ${sname[@]}
         do
+            totN=`sed -n '$=' Elecsim_path/${s}_elec.list`
             cd $s/step${1}/log
             # pwd
             tmpLog=`bash ~jiangw/ck.sh`
-            if [[ ! `echo $tmpLog | grep "txt"` == "" ]];then
+            if [[ `echo $tmpLog | grep "txt"` != "" ]] || [[ `echo $tmpLog | cut -d' ' -f8` != $totN ]];then
                 echo "$s step$1 not done."
                 exit 1
-            else
-                echo -e "\n$tmpLog"
             fi
+            echo -e "\n$tmpLog"
             cd - >/dev/null 2>&1
         done
+    ;;
+    8)
+        totN=`sed -n '$=' Elecsim_path/Laser0.1_elec.list`
+        cd TimeOffset/log
+        tmpLog=`bash ~jiangw/ck.sh`
+        if [[ `echo $tmpLog | grep "txt"` != "" ]] || [[ `echo $tmpLog | cut -d' ' -f8` != $totN ]];then
+            echo "TimeOffset step1 not done."
+            exit 1
+        fi
+        echo -e "\n$tmpLog"
+        cd - >/dev/null 2>&1
+    ;;
+    9)
+        checkExist timeOffset_roofit.txt timeOffset_sub_roofit.txt Parameters/timeOffset_sub_roofit.txt
     ;;
     # 03)
     #     checkExist CheckStation/SPE.png CheckStation/filter.png CheckStation/inteVSinteWidth.png

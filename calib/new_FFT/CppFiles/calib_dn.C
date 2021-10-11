@@ -8,7 +8,7 @@ void calib_dn()
   // TString fname2[nn] = {"C14", "AmC", "^{60}Co", "^{137}Cs", "^{68}Ge", "#mu = 0.1", "#mu = 0.01", "Averaged"};
   // TString fname[nn] = {"AmC", "Co60", "Cs137", "Ge68", "Laser0.1", "Laser0.05", "Averaged"};
   // TString fname2[nn] = {"AmC", "^{60}Co", "^{137}Cs", "^{68}Ge", "#mu = 0.1", "#mu = 0.05", "Averaged"};
-  TString fname = "forceTrigger";
+  TString fname = "SCSSN";
   TFile* f;
   TFile* fc;
 

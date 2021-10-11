@@ -20,6 +20,8 @@ if [[ $4 -eq 1 ]];then
   else
     forceTriggerOpt="--dnstart DNSTART --dnend DNEND --enableForceTriggerInput"
   fi
+else
+  forceTriggerOpt="--dnstart DNSTART --dnend DNEND"
 fi
 listname="Elecsim_path/$1_elec.list"
 m_length=9

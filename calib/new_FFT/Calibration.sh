@@ -203,14 +203,17 @@ elif [[ $1 -eq 14 ]];then
     cd Parameters
     source $junoenv
     if [[ ! -f "CalibPars_dn.txt" ]];then
-        root -b -l -q "$cpath/script4.C"
+        sed "s#SCSSN#$scssn#g" $cpath/script4.C > script4.C
+        root -b -l -q "script4.C"
     fi
     if [[ ! -f "CalibPars_DN.txt" ]];then
-        root -b -l -q "$cpath/calib_dn.C"
+        sed "s#SCSSN#$scssn#g" $cpath/calib_dn.C > calib_dn.C
+        root -b -l -q "calib_dn.C"
     fi
 
     if [[ ! -f "all_CalibPars.txt" ]] && [[ ! -f "moved_all_CalibPars.txt" ]];then
-        root -b -l -q "$cpath/merge.C"
+        sed "s#SCSSN#$scssn#g" $cpath/merge.C > merge.C
+        root -b -l -q "merge.C"
     fi
     if [[ -f "all_CalibPars.txt" ]];then
         cp all_CalibPars.txt ${envpath}/data/Calibration/PMTCalibSvc/data/PmtPrtData_${cname}.txt
