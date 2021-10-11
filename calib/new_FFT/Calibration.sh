@@ -194,7 +194,7 @@ elif [[ $1 -eq 4 ]];then
         root -b -l -q "$cpath/calib_gain.C"
     fi
     if [[ -f "CalibPars.txt" ]];then
-        mkdir -p $envpath/data/Calibration/PMTCalibSvc/data/
+        mkdir -p $envpath/data/Calibration/PMTCalibSvc/data
         cp CalibPars.txt $envpath/data/Calibration/PMTCalibSvc/data/PmtPrtData_${cname}.txt
     fi
     cd $path0
@@ -221,9 +221,12 @@ elif [[ $1 -eq 14 ]];then
     fi
     cd $path0
     if [[ ! -f "SPE_moved.remind" ]];then
+        mkdir -p ${envpath}/data/Reconstruction/Deconvolution/share
         cp C14/step12/user-root/user_calibCorr.root ${envpath}/data/Calibration/PMTCalibSvc/data/output_${cname}.root
-        echo -e "This file reminds that the C14 SPE spectra file has been copied to:\n${envpath}/data/Calibration/PMTCalibSvc/data/out_${cname}.root" > SPE_moved.remind
-        echo "SPE spectra file from C14 has been moved to your envdir."
+        cp Ge68/step02/user-root/SPE.root ${envpath}/data/Reconstruction/Deconvolution/share/SPE_v20.root
+        cp Ge68/step02/user-root/filter.root ${envpath}/data/Reconstruction/Deconvolution/share/filter3_m.root
+        echo -e "This file reminds that the C14 SPE spectra file(And filter and SPE spectra) has been copied to:\n${envpath}/data/Calibration/PMTCalibSvc/data/out_${cname}.root" > SPE_moved.remind
+        echo "SPE charge spectra file from C14 has been moved to your envdir. And filter and SPE spectra."
     fi
 fi
 
