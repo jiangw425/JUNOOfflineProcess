@@ -5,7 +5,7 @@ elecpath=/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/11
 ### --- Please modify the variables above. --- ###
 ###  junoenv: official juno offline env setup  ###
 ###  yourenv: your relative copied from trunk  ###
-###  elecpath: path includes the elecsim files ### not important
+###  elecpath: path includes the elecsim files ###
 
 envpath=`echo ${yourenv%/*}`
 dnstart=725

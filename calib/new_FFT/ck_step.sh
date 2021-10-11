@@ -95,7 +95,7 @@ case $1 in
         checkExist Parameters/CalibPars.txt
     ;;
     14)
-        checkExist Parameters/moved_all_CalibPars.txt Parameters/SPE_moved.remind
+        checkExist Parameters/moved_all_CalibPars.txt SPE_moved.remind
     ;;
 esac
 echo "step$1 done"

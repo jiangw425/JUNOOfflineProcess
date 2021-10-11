@@ -45,6 +45,12 @@ case $1 in
     ;;
     2)
         sname=(C14 Laser0.1 Laser0.05)
+        for s in ${sname[@]}
+        do
+            rm -rf $s/step11/root/*.root
+            rm -rf $s/step11/user-root/*.root
+            rm -rf $s/step12/root/*.root
+        done
     ;;
 esac
 
