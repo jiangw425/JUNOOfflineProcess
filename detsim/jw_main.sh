@@ -4,8 +4,12 @@
 # sim_type=elecsim
 # sim_type=calib
 sim_type=recQTMLE
+
+# sname=(C14)
 # sname=(Co60 Cs137 Ge68 AmC Laser0.1 Laser0.05)
 sname=(Co60 Cs137 Ge68 AmC Laser0.1 Laser0.05)
+# sname=(e+ SpaNeu)
+
 
 radioS=(Co60 Cs137 Ge68 AmC)
 calibS=(Co60 Cs137 Ge68 AmC Laser0.1 Laser0.05)
@@ -14,7 +18,7 @@ jobnum=20
 seed_start=0
 
 laserN=0
-e_energy=0
+e_energies=0
 eventRate=0
 
 for s in ${sname[@]}
@@ -26,6 +30,10 @@ do
         path1="ACU-CLS"
     else
         path1="."
+    fi
+
+    if [[ $s == "e+" ]];then
+        e_energies=0_1_2_3_4_5_6_7_8_9_10_0~10
     fi
 
     if [[ $sim_type == "detsim" ]];then
@@ -40,6 +48,9 @@ do
             eventRate=100
         elif [[ $s == "SpaNeu" ]];then
             eventRate=6
+        elif [[ $s == "C14" ]];then
+            eventRate=40000
+            evtPerJob=10000
         fi
     elif [[ $sim_type == "calib" ]];then
         evtPerJob=-1
@@ -65,7 +76,7 @@ do
     for x_y_z in ${pos_xyz[@]}
     do
         echo "$s $x_y_z"
-        bash jw_gen_run.sh $path1 $s $x_y_z $sim_type $evtPerJob $jobnum $seed_start $laserN $e_energy $eventRate
+        bash jw_gen_run.sh $path1 $s $x_y_z $sim_type $evtPerJob $jobnum $seed_start $laserN $e_energies $eventRate
         seed_start=$(($seed_start+$jobnum))
     done
 

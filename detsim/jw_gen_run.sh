@@ -40,18 +40,41 @@ elecsim_gen(){
     echo "source ${junoenv}" >> ${name}
     echo "(time python \$TUTORIALROOT/share/tut_det2elec.py --evtmax ${evtPerJob} --seed ${seed} --loglevel Fatal --input eventinput:../detsim/root/detsim-${n}.root ${splitOpt} ${commonOut} --rate eventinput:${eventRate} --input C14:${C14_detsim_path}/detsim/root/detsim-${C14_n}.root --rate C14:40000 --loop C14:1 --nHitsThreshold 500) >& log/log-${sim_type}-${n}.txt" >> ${name}
 }
+elecsim_woC14_gen(){
+    if [[ $sname == "C14" ]];then
+        NHITSTHRESHOLD=100
+        TRIGGER_FIREDPMTNUM=30
+    else
+        NHITSTHRESHOLD=500
+        TRIGGER_FIREDPMTNUM=200
+    fi
+    echo "source ${junoenv}" >> ${name}
+    echo "(time python \$TUTORIALROOT/share/tut_det2elec.py --evtmax ${evtPerJob} --seed ${seed} --loglevel Fatal --input ../detsim/root/detsim-${n}.root ${splitOpt} ${commonOut} --rate ${eventRate} --nHitsThreshold ${NHITSTHRESHOLD} --Trigger_FiredPmtNum ${TRIGGER_FIREDPMTNUM}) >& log/log-${sim_type}-${n}.txt" >> ${name}
+}
 calib_gen(){
     echo "source ${localenv}" >> ${name}
     echo "(time python \$TUTORIALROOT/share/tut_elec2calib.py --evtmax ${evtPerJob} --enableElecTruth --input ../elecsim/root/elecsim-${n}.root ${commonOut}) >& log/log-${sim_type}-${n}.txt" >> ${name}
 }
 recQTMLE_gen(){
+    Opt_ERec="--method energy-point --enableQTimePdf --enableUseEkMap --enableLTSPEs --enableTimeInfo"
     recOut="--output root/rec-${n}.root --user-output user-root/user-rec-${n}.root"
     echo "source ${junoenv}" >> ${name}
     echo "(time python \${TUTORIALROOT}/share/tut_calib2rec.py --evtmax ${evtPerJob} --gdml ${Opt_ERec} --RecMapPath ${recMapPath} --input ../calib/root/calib-${n}.root ${recOut} --elec yes) >& log/log-${sim_type}-${n}.txt" >> ${name}
     echo "rm -f root/rec-${n}.root" >> ${name}
 }
 
-dir=${path1}/${sname}/${sname}_${pos_xyz}/${sim_type}
+if [[ $sname == "e+" ]];then
+    if [[ `echo $e_energy | grep \~` != "" ]];then
+        is_energy_range=1
+        e_min=`echo $e_energy | cut -d~ -f1`
+        e_max=`echo $e_energy | cut -d~ -f2`
+    else
+        is_energy_range=0
+    fi
+    dir=${path1}/${sname}/${sname}_${pos_xyz}/${e_energy}MeV/${sim_type}
+else
+    dir=${path1}/${sname}/${sname}_${pos_xyz}/${sim_type}
+fi
 if [[ ! -d $dir ]];then
     mkdir -p $dir/run
     mkdir -p $dir/user-root
@@ -76,9 +99,15 @@ do
         elif [[ $sname == "C14" ]];then
             detsim_special_opt="gendecay --nuclear ${sname} ${pos_opt}"
         elif [[ $sname == "e+" ]];then
-            detsim_special_opt="gun --particles ${sname} ${pos_opt} --momentums ${e_energy} --momentums-interp KineticEnergy"
+            detsim_special_opt="gun --particles ${sname} ${pos_opt} "
+            if [[ $is_energy_range -eq 0 ]];then
+                detsim_special_opt+="--momentums ${e_energy} "
+            else
+                detsim_special_opt+="--momentums ${e_min} --momentums-mode Range --momentums-extra-params ${e_max} "
+            fi
+            detsim_special_opt+="--momentums-interp KineticEnergy"
         elif [[ $sname == "SpaNeu" ]];then
-            SNindex=$(($n*$evtPerJob))
+            SNindex=$(($n*$evtPerJob%3445741))
             detsim_special_opt="neutron --input ${SpaNeu_input} --index ${SNindex}"
         fi
 
@@ -103,7 +132,11 @@ do
     fi
 
     commonOut="--output root/${sim_type}-${n}.root --user-output user-root/user-${sim_type}-${n}.root"
-    ${sim_type}_gen
+    if [[ $sim_type == elecsim ]] && [[ $sname == "C14" ]] || [[ $sname == "e+" ]];then
+        ${sim_type}_woC14_gen
+    else
+        ${sim_type}_gen
+    fi
 done
 chmod +x run/*.sh
 cd $path0
