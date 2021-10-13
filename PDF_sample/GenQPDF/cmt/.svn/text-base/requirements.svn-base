@@ -1,0 +1,21 @@
+package OMILREC
+
+use ROOT v* Externals
+use Boost v* Externals
+use SniperRelease v*
+use SniperKernel v*
+use RecEvent v* DataModel
+use CalibEvent v* DataModel
+use Identifier v* Detector
+use Geometry v* Detector
+use EvtNavigator v* DataModel
+use DataRegistritionSvc v* DataModel
+use BufferMemMgr v* CommonSvc
+
+macro_append OMILREC_shlibflags " -lMinuit2 "
+
+macro_append Boost_linkopts " -lboost_filesystem -lboost_system "
+
+library OMILREC *.cc
+apply_pattern linker_library library=OMILREC
+apply_pattern install_python_modules

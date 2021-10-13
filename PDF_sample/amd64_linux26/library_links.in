@@ -1,0 +1,7 @@
+macro GenCalibPDFVertexAndEnergy_libraries /afs/ihep.ac.cn/users/l/luoxj/scratchfs_juno_500G/GenCalibPDFVertexAndEnergy/J21v1r0-Pre0/amd64_linux26/libGenCalibPDF.so
+macro shlibsuffix so
+macro library_install_command python" "/cvmfs/juno.ihep.ac.cn/centos7_amd64_gcc830/Pre-Release/J21v1r0-Pre0/sniper/SniperPolicy/cmt/fragments/install.py" "-xCVS" "-x.svn" "-x*~" "-x*.stamp" "-s" "--log=./install.history" "
+macro symunlink /bin/rm" "-f" "
+build_strategy with_installarea
+macro CMTINSTALLAREA 
+macro tag amd64_linux26

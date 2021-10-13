@@ -1,0 +1,27 @@
+package GenCalibPDF
+
+use ROOT v* Externals
+use Boost v* Externals
+use SniperRelease v*
+use SniperKernel v*
+use RecEvent v* DataModel
+use ElecEvent v* DataModel
+use CalibEvent v* DataModel
+use Identifier v* Detector
+use Geometry v* Detector
+use EvtNavigator v* DataModel
+use DataRegistritionSvc v* DataModel
+use BufferMemMgr v* CommonSvc
+use PMTCalibSvc v* Calibration
+
+
+macro_append Boost_linkopts " -lboost_filesystem -lboost_system "
+
+library GenCalibPDF *.cc
+apply_pattern linker_library library=GenCalibPDF
+apply_pattern install_python_modules
+
+
+
+
+
