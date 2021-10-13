@@ -29,12 +29,26 @@ localenv="/junofs/users/jiangw/J21v1r0-Pre2/bashrc"
 C14_detsim_path="/afs/ihep.ac.cn/users/v/valprod0/Pre-Releases/J21v1r0-Pre2/11/C14"
 SpaNeu_input="/junofs/production/data-production/Pre-Releases/J21v1r0-Pre0/SpallationNeutron/output_neu.root"
 maskOpt="--real-surface-in-cd --enable-optical-surface-in-cd --enable-strut-optical-surface --real-mask-tail --enable-mask-tail-surface"
+recMapPath="/scratchfs/juno/jiangw/give2myself/11/recMap"
+
 detsim_gen(){
+    echo "source ${junoenv}" >> ${name}
     echo "(time python \$TUTORIALROOT/share/tut_detsim.py ${splitOpt} --evtmax ${evtPerJob} --seed ${seed} ${OriginUser} ${commonOut} ${maskOpt} ${detsim_special_opt}) >& log/log-${sim_type}-${n}.txt" >> ${name}
 }
 elecsim_gen(){
     C14_n=$(($n%50))
+    echo "source ${junoenv}" >> ${name}
     echo "(time python \$TUTORIALROOT/share/tut_det2elec.py --evtmax ${evtPerJob} --seed ${seed} --loglevel Fatal --input eventinput:../detsim/root/detsim-${n}.root ${splitOpt} ${commonOut} --rate eventinput:${eventRate} --input C14:${C14_detsim_path}/detsim/root/detsim-${C14_n}.root --rate C14:40000 --loop C14:1 --nHitsThreshold 500) >& log/log-${sim_type}-${n}.txt" >> ${name}
+}
+calib_gen(){
+    echo "source ${localenv}" >> ${name}
+    echo "(time python \$TUTORIALROOT/share/tut_elec2calib.py --evtmax ${evtPerJob} --enableElecTruth --input ../elecsim/root/elecsim-${n}.root ${commonOut}) >& log/log-${sim_type}-${n}.txt" >> ${name}
+}
+recQTMLE_gen(){
+    recOut="--output root/rec-${n}.root --user-output user-root/user-rec-${n}.root"
+    echo "source ${junoenv}" >> ${name}
+    echo "(time python \${TUTORIALROOT}/share/tut_calib2rec.py --evtmax ${evtPerJob} --gdml ${Opt_ERec} --RecMapPath ${recMapPath} --input ../calib/root/calib-${n}.root ${recOut} --elec yes) >& log/log-${sim_type}-${n}.txt" >> ${name}
+    echo "rm -f root/rec-${n}.root" >> ${name}
 }
 
 dir=${path1}/${sname}/${sname}_${pos_xyz}/${sim_type}
@@ -45,7 +59,7 @@ if [[ ! -d $dir ]];then
     mkdir -p $dir/log
 fi
 cd $dir
-rm -rf run/*${sim_type}*.sh
+rm -rf run/*${sim_type}*.sh*
 
 for((n=0;n<$jobnum;n++))
 do
@@ -53,7 +67,6 @@ do
     seed=$(($seed_start+$n))
     echo "#!/bin/bash" > $name
     echo "cd ${path0}/${dir}" >> $name
-    echo "source ${junoenv}" >> $name
     # echo "\$JUNOTESTROOT/production/libs/jobmom.sh \$\$ >& log/log-${sim_type}-${n}.txt.mem.usage &" >> $name
     if [[ $sim_type == "detsim" ]];then
         if [[ ${radioS[@]} =~ ${sname} ]];then

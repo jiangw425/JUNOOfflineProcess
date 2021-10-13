@@ -1,7 +1,8 @@
 #!/bin/bash
 path0=`pwd`
 echo -e "\nA new auto_sub job is running from here: `hostname` at `date`"
-sim_type=detsim
+# sim_type=detsim
+sim_type=calib
 
 tmpname=${sim_type}_subdirs.txt
 dirnum=`cat $tmpname | wc -l`

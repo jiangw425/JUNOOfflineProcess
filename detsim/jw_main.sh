@@ -1,7 +1,9 @@
 #!/bin/bash
 # todo: e+ spaneu
 # sim_type=detsim
-sim_type=elecsim
+# sim_type=elecsim
+# sim_type=calib
+sim_type=recQTMLE
 # sname=(Co60 Cs137 Ge68 AmC Laser0.1 Laser0.05)
 sname=(Co60 Cs137 Ge68 AmC Laser0.1 Laser0.05)
 
@@ -39,6 +41,10 @@ do
         elif [[ $s == "SpaNeu" ]];then
             eventRate=6
         fi
+    elif [[ $sim_type == "calib" ]];then
+        evtPerJob=-1
+    elif [[ $sim_type == "rec_QTMLE" ]];then
+        evtPerJob=-1
     fi
 
     pos_xyz=()
