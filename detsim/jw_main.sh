@@ -17,9 +17,9 @@ evtPerJob=1000
 jobnum=20
 seed_start=0
 
-laserN=0
-e_energies=0
-eventRate=0
+laserN=1
+e_energies=1
+eventRate=1
 
 for s in ${sname[@]}
 do
@@ -33,7 +33,8 @@ do
     fi
 
     if [[ $s == "e+" ]];then
-        e_energies=0_1_2_3_4_5_6_7_8_9_10_0~10
+        # e_energies=0_1_2_3_4_5_6_7_8_9_10_0~10
+        e_energies=0_1_2_3_4_5_6_7_8_9_10
     fi
 
     if [[ $sim_type == "detsim" ]];then
@@ -41,6 +42,9 @@ do
             laserN=11522
         elif [[ $s == "Laser0.1" ]];then
             laserN=22000
+        elif [[ $s == "e+" ]];then
+            evtPerJob=500
+            jobnum=100
         fi
     elif [[ $sim_type == "elecsim" ]];then
         evtPerJob=-1
