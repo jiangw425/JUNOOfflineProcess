@@ -1,25 +1,27 @@
 #!/bin/bash
-name_sources=( "Ge68" "Laser0.05")
-# name_sources=( "Laser0.05")
-for s in ${name_sources[@]}
+path0=`pwd`
+mytop=MYTOP
+
+job_totN=293
+sname=( "Ge68" "Laser0.05")
+# sname=( "Laser0.05")
+for s in ${sname[@]}
 do
     mkdir -p $s
-    cd $s 
-    sed -e "s/NAMESOURCE/$s/g" ../sample-detsim-e+_parent.sh >gen-detsim-e+.sh
-    # if [[ $1 = sub ]];then
-    . gen-detsim-e+.sh $s
-    # fi
+    cd $s
+    path1=`pwd`
+    mkdir -p root log run
+    jnb=run/${s}_pdf_
+    for((n=0;n<$job_totN;n++))
+    do
+        job_name=${jnb}${n}.sh
+        echo "#!/bin/bash" > $job_name
+        echo "cd ${path1}" >> $job_name
+        echo "source $mytop/bashrc" >> $job_name
+        echo "(time python ../tut_calib2rec.py --JOBA ${n} --JOBB $[$n+1] --PMTtype 1 --SignalWindow 280 --RfrIndxLS 1.54 --RfrIndxWR 1.355 --calibdir ACUCLSPATH --usercalibdir ACUCLSPATH --paradir ${mytop}/data/Calibration/PMTCalibSvc/data --calibsource $s --startseed 0 --filenum FILENUM) >& pdflog-${n}.txt" >> $job_name
+        echo "mv PE-theta-distribution-${n}.root root/" >> $job_name
+    done
+    chmod +x ${jnb}*.sh
+    hep_sub ${jnb}"%{ProcId}".sh -n $job_totN -e /dev/null -o /dev/null
     cd ..
-
-    if [[ $s == "Ge68" ]];then
-        jw=""
-    elif [[ $s == "Laser0.05" ]];then
-        jw="_Ek"
-    fi
-
-    mkdir -p $s/GridMu_RealAdd
-	sed "s#SOURCE#$s#g" SampleFiles/genpemap.py    > $s/GridMu_RealAdd/genpemap.py
-    sed "s#SOURCE#$s#g" SampleFiles/Collect_R1.C   > $s/GridMu_RealAdd/Collect_R1.C
-    sed -e "s#SOURCE#$s#g" -e "s#JW#$jw#g" SampleFiles/Collect_comb.C > $s/GridMu_RealAdd/Collect_comb.C
 done
-

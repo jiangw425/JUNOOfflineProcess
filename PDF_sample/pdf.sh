@@ -27,14 +27,7 @@ if [[ $input1 == 0 ]];then
     cd $path0
 elif [[ $input1 == 1 ]];then
     cd share
-    for s in ${sname[@]}
-    do
-        mkdir -p $s
-        cd $s 
-        sed -e "s/NAMESOURCE/$s/g" ../sample-detsim-e+_parent.sh >gen-detsim-e+.sh
-        . gen-detsim-e+.sh $s
-        cd ..
-    done
+    bash gen.sh
     cd $path0
 elif [[ $input1 == 2 ]];then
     cd share
@@ -79,7 +72,6 @@ elif [[ $input1 == 3 ]];then
     source $localenv
     make
     cd ../share
-    mkdir -p NPEPDF
     bash gen-rec.sh
     cd $path0
 elif [[ $input1 == 4 ]];then

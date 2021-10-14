@@ -9,7 +9,6 @@ filenum=20
 ###  elecpath: path includes the elecsim files ###
 
 envpath=`echo ${yourenv%/*}`
-paradir=${envpath}/data/Calibration/PMTCalibSvc/data
 copyPath=/junofs/users/jiangw/GitCode/JUNOOfflineProcess/PDF_sample
 
 if [[ ! -f pdf_recorder.txt ]];then
@@ -20,7 +19,7 @@ fi
 # rsync $copyPath/../autoRun_calibration.sh .
 
 cd share
-sed -e "s#MYTOP#${envpath}#g" -e "s#ACUCLSPATH#${acuclspath}#g" -e "s#FILENUM#${filenum}#g" -e "s#PARADIR#${paradir}#g" ${copyPath}/share/sample-detsim-e+_parent.sh > sample-detsim-e+_parent.sh
+sed -e "s#MYTOP#${envpath}#g" -e "s#ACUCLSPATH#${acuclspath}#g" -e "s#FILENUM#${filenum}#g" ${copyPath}/share/gen.sh > gen.sh
 cd ..
 
 cd GenQPDF/share
