@@ -79,12 +79,22 @@ elif [[ $input1 == 3 ]];then
     source $localenv
     make
     cd ../share
+    mkdir -p NPEPDF
     bash gen-rec.sh
     cd $path0
 elif [[ $input1 == 4 ]];then
     mkdir -p GenQPDF/NPEQ
     cd GenQPDF/NPEQ
     root -l -b -q $path0/SampleFiles/AvgNPEQpdf.C
+    cd $path0
+
+    mkdir -p recMap
+    cd recMap
+    mkdir -p CalibPMTPara ChargeSpec TimePdf nPEMap
+    cp ../share/Ge68/GridMu_RealAdd/LnPEMapFile.root nPEMap
+    cp ../share/Laser0.05/GridMu_RealAdd/LnPEMapFile_Ek.root nPEMap
+    cp ../share/timePDF/TimePdfFile.root TimePdf
+    cp ../GenQPDF/NPEQ/AvgNPEQpdf.root ChargeSpec
     cd $path0
 fi
 

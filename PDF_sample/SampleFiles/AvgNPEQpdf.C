@@ -28,7 +28,7 @@ void AvgNPEQpdf()
     }
     for(int i=0;i<881;i++) {
         std::cout<<i<<std::endl;
-        TFile* FileTemp = new TFile(Form("../runscript/NPEPDF/SPEsQPDF_%d.root", k), "READ");
+        TFile* FileTemp = new TFile(Form("../share/NPEPDF/SPEsQPDF_%d.root", k), "READ");
         for(int c=k;c<k+20&&c<TotalPMT;c++) {
             for(int nPE = 0; nPE < peRange; nPE ++) {
                 TH1F* hTemp = (TH1F*)FileTemp->Get(Form("channel%d_nPE%d_qpdf", c, nPE+1));
