@@ -76,7 +76,7 @@ for jj in range(TotalPosNum):
         continue
     j = j + 1
     #f = TFile("/junofs/users/huanggh/EnergyRec/GenCalibData/ACU_CLS_MAP/nPEMap/J20v2r0-Pre2_phy_zxt_decon/share/Ge68/Dyn/PE-theta-distribution-%d.root"%(jj), "READ");
-    f = TFile("../PE-theta-distribution-%d.root"%(jj), "READ");
+    f = TFile("../root/PE-theta-distribution-%d.root"%(jj), "READ");
     LGrTemp = f.Get("RecGraph");
     SGrTemp = f.Get("RecGraph");
     print(j, LGrTemp.Eval(90.), SGrTemp.Eval(90.))

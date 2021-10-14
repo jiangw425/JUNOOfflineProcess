@@ -227,7 +227,7 @@ bool GenQPDF::execute()
 {
     m_iEvt++;
     
-    std::ofstream fitResultOut;
+    // std::ofstream fitResultOut;
 //if(enableHighMuFit) fitResultOut.open(Form("%s/FITLog/fitResult_%d.txt", outdir.c_str(), jobA), std::ios::out);
     double gain_smooth = 0., gain_hist = 0., gain_fit = 0.;
 
@@ -340,7 +340,7 @@ bool GenQPDF::execute()
             mu_fit -= DC[PMTID];
             double mu_cal = -log((19800.-N_fit)/19800.) - DC[PMTID];
 
-            fitResultOut<<PMTID<<'\t'<<chi2_ndf<<'\t'<<mu_fit<<'\t'<<mu_fit_err<<'\t'<<mu_cal<<'\t'<<mu_fit/PDE[PMTID]<<'\t'<<gain_smooth<<'\t'<<gain_hist<<'\t'<<gain_fit<<std::endl;
+            // fitResultOut<<PMTID<<'\t'<<chi2_ndf<<'\t'<<mu_fit<<'\t'<<mu_fit_err<<'\t'<<mu_cal<<'\t'<<mu_fit/PDE[PMTID]<<'\t'<<gain_smooth<<'\t'<<gain_hist<<'\t'<<gain_fit<<std::endl;
             if(chi2_ndf>2.) LogDebug<<"Found largeChi2 !"<<std::endl;
 
             LogDebug<<"==========================================================="<<std::endl;

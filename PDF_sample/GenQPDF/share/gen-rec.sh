@@ -2,7 +2,7 @@
 path0=`pwd`
 mytop=MYTOP
 
-mkdir -p NPEPDF run log
+mkdir -p NPEPDF run log PHOLog FITLog
 
 job_totN=881
 jnb=run/qpdf_
