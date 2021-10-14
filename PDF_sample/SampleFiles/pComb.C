@@ -104,7 +104,7 @@ void pComb()
 
                 std::cout<<source[src]<< '\t' << pmttype[pmt] << '\t' <<  ii<<'\t' << R[ii] << '\t' <<  rBin << std::endl;
 
-                TimePdfIn.open(Form("%s/%s/T%s/T%s_pos%d.txt",  datapath.c_str(), source[src].c_str(), pmttype[pmt].c_str()), pmttype[pmt].c_str()), ii, std::ios::in);
+                TimePdfIn.open(Form("%s/%s/T%s/T%s_pos%d.txt",  datapath.c_str(), source[src].c_str(), pmttype[pmt].c_str()), pmttype[pmt].c_str(), ii), std::ios::in);
                 if(!TimePdfIn) {
                     cout<<Form("pos%d/T%s.txt does not exits!", ii, pmttype[pmt].c_str())<<endl;
                     continue;
