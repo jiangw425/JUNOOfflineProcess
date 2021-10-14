@@ -33,7 +33,7 @@ checkLogs(){
                     jobnum=`echo ${f##*-} | cut -d. -f1`
                     job_name=`ls ../run | grep "[-,_]${jobnum}.sh" | awk 'NR==1'`
                     hep_sub $job_name -e /dev/null -o /dev/null
-                fi    
+                fi
             done
         else
             exit 1

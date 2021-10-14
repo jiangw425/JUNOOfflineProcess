@@ -335,7 +335,7 @@ bool GenCalibPDF::execute()
 
 
     TCanvas* cHv = new TCanvas("cHv","Graph Example",200,10,700,500);
-    TString plotName = "PEMeanMap";
+    TString plotName = Form("PEMeanMap_%d",jobA);
     cHv->Print(plotName+".pdf[", "pdf");
 
 
@@ -398,9 +398,9 @@ bool GenCalibPDF::execute()
 
     std::cout<<"begin save time pdf data!"<<std::endl;
     std::ofstream DynTimePdfOut;
-    DynTimePdfOut.open(Form("pos%d/Tdyn.txt", jobA ), std::ios::out);
+    DynTimePdfOut.open(Form("Tdyn_pos%d.txt", jobA ), std::ios::out);
     std::ofstream McpTimePdfOut;
-    McpTimePdfOut.open(Form("pos%d/Tmcp.txt", jobA ), std::ios::out);
+    McpTimePdfOut.open(Form("Tmcp_pos%d.txt", jobA ), std::ios::out);
 
     for(int qk=0;qk<qBinN;qk++) {
         for(int dk=0;dk<dBinN;dk++) {

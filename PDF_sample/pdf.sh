@@ -89,5 +89,3 @@ elif [[ $input1 == 4 ]];then
     cp ../GenQPDF/NPEQ/AvgNPEQpdf.root ChargeSpec
     cd $path0
 fi
-
-echo "step$input1 done."
