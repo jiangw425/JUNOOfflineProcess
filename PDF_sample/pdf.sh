@@ -77,6 +77,7 @@ elif [[ $input1 == 3 ]];then
 elif [[ $input1 == 4 ]];then
     mkdir -p GenQPDF/NPEQ
     cd GenQPDF/NPEQ
+    source $localenv
     root -l -b -q $path0/SampleFiles/AvgNPEQpdf.C
     cd $path0
 

@@ -1,4 +1,5 @@
 #!/bin/bash
+path0=`pwd`
 if [[ $#<=0 ]]; then
     echo "You have not input step number."
     exit 1
@@ -31,8 +32,10 @@ checkLogs(){
             do
                 if [[ $f == *log-*.txt ]];then
                     jobnum=`echo ${f##*-} | cut -d. -f1`
-                    job_name=`ls ../run | grep "[-,_]${jobnum}.sh" | awk 'NR==1'`
+                    cd ../run
+                    job_name=`ls | grep "[-,_]${jobnum}.sh" | awk 'NR==1'`
                     hep_sub $job_name -e /dev/null -o /dev/null
+                    cd - > /dev/null
                 fi
             done
         else
@@ -52,13 +55,13 @@ case $input1 in
         do
             cd share/$s/log
             checkLogs 293 $input2
-            cd - >/dev/null 2>&1
+            cd $path0
         done
     ;;
     3)
         cd GenQPDF/share/log
         checkLogs 881 $input2
-        cd - > /dev/null 2>&1
+        cd $path0
     ;;
 esac
 # echo "step$1 done"
