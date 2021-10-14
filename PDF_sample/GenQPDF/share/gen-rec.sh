@@ -80,5 +80,5 @@ do
     #hep_sub $SH_NAME -g juno -o $LOG_NAME -e $ERR_NAME
     ((seed += 20))
 done
-hep_sub run-"%{ProcId}".sh -n 881
+hep_sub run-"%{ProcId}".sh -n 881 -e /dev/null -o /dev/null
 #hep_sub run_parent.sh -argu %{ProcId} -n 881

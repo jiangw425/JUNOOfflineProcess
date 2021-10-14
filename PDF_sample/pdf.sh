@@ -18,13 +18,14 @@ checkExist(){
     done
 }
 
+input1=$1; shift
 sname=(Ge68 Laser0.05)
-if [[ $1 == 0 ]];then
+if [[ $input1 == 0 ]];then
     cd cmt
     source $localenv
     make
     cd $path0
-elif [[ $1 == 1 ]];then
+elif [[ $input1 == 1 ]];then
     cd share
     for s in ${sname[@]}
     do
@@ -35,7 +36,7 @@ elif [[ $1 == 1 ]];then
         cd ..
     done
     cd $path0
-elif [[ $1 == 2 ]];then
+elif [[ $input1 == 2 ]];then
     cd share
     source /hpcfs/juno/junogpu/jiangw/miniconda3/bin/activate
     conda activate Cern
@@ -43,14 +44,15 @@ elif [[ $1 == 2 ]];then
     do
         mkdir -p $s/GridMu_RealAdd
         cd $s/GridMu_RealAdd
-        sed "s#SOURCE#$s#g" $path0/SampleFiles/genpemap.py    > $s/GridMu_RealAdd/genpemap.py
+        sed "s#SOURCE#$s#g" $path0/SampleFiles/genpemap.py > genpemap.py
         python genpemap.py
+        cd - > /dev/null
     done
     conda deactivate
     conda deactivate
     cd $path0
     echo "Now you need to copy files to local PC and process using matlab."
-elif [[ $1 == 3 ]];then
+elif [[ $input1 == 3 ]];then
     cd share
     for s in ${sname[@]}
     do
@@ -61,8 +63,8 @@ elif [[ $1 == 3 ]];then
         elif [[ $s == "Laser0.05" ]];then
             EkOpt="_Ek"
         fi
-        sed "s#SOURCE#$s#g" $path0/SampleFiles/Collect_R1.C   > $s/GridMu_RealAdd/Collect_R1.C
-        sed -e "s#SOURCE#$s#g" -e "s#JW#$EkOpt#g" $path0/SampleFiles/Collect_comb.C > $s/GridMu_RealAdd/Collect_comb.C
+        sed "s#SOURCE#$s#g" $path0/SampleFiles/Collect_R1.C > Collect_R1.C
+        sed -e "s#SOURCE#$s#g" -e "s#JW#$EkOpt#g" $path0/SampleFiles/Collect_comb.C > Collect_comb.C
         root -l -q -b Collect_R1.C
         root -l -q -b Collect_comb.C
         cd ../..
@@ -72,15 +74,18 @@ elif [[ $1 == 3 ]];then
     cd timePDF
     root -b -q -l $path0/SampleFiles/pComb.C
     root -b -q -l $path0/SampleFiles/DNnPETimePdf_GL.C
-    cd $path0
 
-    cd GenQPDF/cmt
+    cd $path0/GenQPDF/cmt
     source $localenv
     make
     cd ../share
-
-
-
+    bash gen-rec.sh
+    cd $path0
+elif [[ $input1 == 4 ]];then
+    mkdir -p GenQPDF/NPEQ
+    cd GenQPDF/NPEQ
+    root -l -b -q $path0/SampleFiles/AvgNPEQpdf.C
+    cd $path0
 fi
 
-echo "step$1 done."
+echo "step$input1 done."

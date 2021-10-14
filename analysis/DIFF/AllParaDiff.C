@@ -13,8 +13,8 @@ void AllParaDiff()
 		//"/cvmfs/juno.ihep.ac.cn/centos7_amd64_gcc830/Pre-Release/J21v1r0-Pre0/data/Calibration/PMTCalibSvc/data/PmtPrtData_deconv.txt",//old
         //"/junofs/users/jiangw/J21_calib/FFT/Parameters/moved_all_CalibPars.txt" //new, show in red line
 		//"/junofs/users/jiangw/give2lxj/J21v1r0-Pre0/PmtPrtData_inte.txt",
-		//"/junofs/users/jiangw/give2lxj/J21v1r0-Pre0/PmtPrtData_deconv.txt"
-		"/scratchfs/juno/liujiaxi16/new/Parameters/moved_all_CalibPars.txt",
+		"/junofs/users/jiangw/give2lxj/PmtPrtData_deconv.txt",
+		//"/scratchfs/juno/liujiaxi16/new/Parameters/moved_all_CalibPars.txt",
 		//"/scratchfs/juno/jiangw/Pre2_bug/Parameters/moved_all_CalibPars.txt",
 		"/scratchfs/juno/jiangw/Pre2/Parameters/moved_all_CalibPars.txt"
     };

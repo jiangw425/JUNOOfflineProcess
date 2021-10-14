@@ -9,14 +9,23 @@ filenum=20
 ###  elecpath: path includes the elecsim files ###
 
 envpath=`echo ${yourenv%/*}`
+paradir=${envpath}/data/Calibration/PMTCalibSvc/data
 copyPath=/junofs/users/jiangw/GitCode/JUNOOfflineProcess/PDF_sample
 
-rsync -av $copyPath/* .
+if [[ ! -f pdf_recorder.txt ]];then
+    rsync -av $copyPath/* .
+else
+    rsync -av --exclude={"amd64_linux26","cmt","python","GenQPDF/amd64_linux26","GenQPDF/cmt","GenQPDF/python"} $copyPath/* .
+fi
 # rsync $copyPath/../autoRun_calibration.sh .
 
 cd share
-sed -e "s#MYTOP#${envpath}#g" -e "s#ACUCLSPATH#${acuclspath}#g" -e "s#FILENUM#${filenum}#g" ${copyPath}/share/sample-detsim-e+_parent.sh > sample-detsim-e+_parent.sh
+sed -e "s#MYTOP#${envpath}#g" -e "s#ACUCLSPATH#${acuclspath}#g" -e "s#FILENUM#${filenum}#g" -e "s#PARADIR#${paradir}#g" ${copyPath}/share/sample-detsim-e+_parent.sh > sample-detsim-e+_parent.sh
 cd ..
+
+cd GenQPDF/share
+sed "s#MYTOP#${envpath}#g" ${copyPath}/GenQPDF/share/gen-rec.sh > gen-rec.sh
+cd ../..
 
 sed -e "s#LOCALENV#${yourenv}#g" ${copyPath}/pdf.sh > pdf.sh
 

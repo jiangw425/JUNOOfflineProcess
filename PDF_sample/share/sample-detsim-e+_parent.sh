@@ -59,7 +59,7 @@ source $mytop/bashrc
 export EOS_MGM_URL="root://junoeos01.ihep.ac.cn"
 export EOS_HOME="/eos/juno/valprod/valprod0/"
 
-(time python ../tut_calib2rec.py --JOBA $1 --JOBB $[$1+1] --PMTtype 1 --SignalWindow 280 --RfrIndxLS 1.54 --RfrIndxWR 1.355 --calibdir $data_source_dir --usercalibdir $data_source_dir  --calibsource NAMESOURCE --startseed 0 --filenum FILENUM) >& $calibLOG_NAME
+(time python ../tut_calib2rec.py --JOBA $1 --JOBB $[$1+1] --PMTtype 1 --SignalWindow 280 --RfrIndxLS 1.54 --RfrIndxWR 1.355 --calibdir ${data_source_dir} --usercalibdir ${data_source_dir} --paradir PARADIR --calibsource NAMESOURCE --startseed 0 --filenum FILENUM) >& $calibLOG_NAME
 EOF
 
 chmod +x $SH_NAME
