@@ -10,6 +10,7 @@ for((n=0;n<$job_totN;n++))
 do
     job_name=${jnb}${n}.sh
     echo "#!/bin/bash" > $job_name
+    echo "cd ${path0}" >> $job_name
     echo "source $mytop/bashrc" >> $job_name
     joba=$((20*$n))
     echo "(time python Genqpdf.py --JOBA ${joba} --JOBB $[$joba+20] --enableUserSPEs --runmode 2 --peRange 100 --userSPEFile ${mytop}/data/Calibration/PMTCalibSvc/data/output_deconv.root --outdir ./ ) >&  log/qpdflog-${n}.txt" >> $job_name

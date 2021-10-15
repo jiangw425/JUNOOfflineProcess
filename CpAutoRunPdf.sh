@@ -11,7 +11,7 @@ filenum=20
 envpath=`echo ${yourenv%/*}`
 copyPath=/junofs/users/jiangw/GitCode/JUNOOfflineProcess/PDF_sample
 
-if [[ ! -f pdf_recorder.txt ]];then
+if [[ ! -f recorder_pdf.txt ]];then
     rsync -av $copyPath/* .
 else
     rsync -av --exclude={"amd64_linux26","cmt","python","GenQPDF/amd64_linux26","GenQPDF/cmt","GenQPDF/python"} $copyPath/* .
@@ -28,4 +28,4 @@ cd ../..
 
 sed -e "s#LOCALENV#${yourenv}#g" ${copyPath}/pdf.sh > pdf.sh
 
-echo "`date` on `hostname`: `whoami` runs COPY script." >> pdf_recorder.txt
+echo "`date` on `hostname`: `whoami` runs COPY script." >> recorder_pdf.txt

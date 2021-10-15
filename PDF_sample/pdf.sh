@@ -19,7 +19,7 @@ checkExist(){
 }
 
 input1=$1; shift
-echo "`date` on `hostname`: `whoami` runs step $input1." >> pdf_recorder.txt
+echo "`date` on `hostname`: `whoami` runs step $input1." >> recorder_pdf.txt
 sname=(Ge68 Laser0.05)
 if [[ $input1 == 0 ]];then
     cd cmt

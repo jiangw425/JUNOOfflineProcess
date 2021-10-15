@@ -37,7 +37,7 @@ if [[ ! ${steps[@]} =~ $1 ]];then
     exit 3
 fi
 
-echo "`date` on `hostname`: `whoami` runs step $1." >> calibration_recorder.txt
+echo "`date` on `hostname`: `whoami` runs step $1." >> recorder_calibration.txt
 
 path0=`pwd`
 bpath=$path0/BashFiles
