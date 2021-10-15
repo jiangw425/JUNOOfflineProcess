@@ -1,10 +1,18 @@
 #!/bin/bash
 path0=`pwd`
 echo -e "\nA new auto_sub job is running from here: `hostname` at `date`"
-# sim_type=detsim
-sim_type=calib
+sim_type=${1:-"detsim"}; shift
 
+sim_types=(detsim elecsim calib recQTMLE)
+if [[ ! ${sim_types[@]} =~ ${sim_type} ]];then
+    echo "Wrong sim_type! Choose from: ${sim_types[@]}"
+    exit 1
+fi
 tmpname=${sim_type}_subdirs.txt
+if [[ ! -f ${tmpname} ]];then
+    echo "$tmpname not exist!"
+    exit 1
+fi
 dirnum=`cat $tmpname | wc -l`
 for((nn=1;nn<=${dirnum};))
 #for((nn=1;nn<=10;))
@@ -32,7 +40,7 @@ do
             #    echo "$dir run successfully!"
             #else
                 # no log files or success files
-            hep_sub ${jobname}"%{ProcId}".sh -n $jobnum
+            hep_sub ${jobname}"%{ProcId}".sh -n $jobnum -e /dev/null -o /dev/null
             #fi
         else
             echo "$dir job number not 20"
@@ -40,7 +48,9 @@ do
         let "nn=nn+1"
         cd $path0
     else
-        hep_edit -m 3000 -a && hep_release -a
+        if [[ $sim_type == detsim ]];then
+            hep_edit -m 3000 -a && hep_release -a
+        fi
         sleep 120
     fi
 done

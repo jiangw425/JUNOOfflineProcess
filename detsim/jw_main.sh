@@ -1,16 +1,16 @@
 #!/bin/bash
-# todo: e+ spaneu
-# sim_type=detsim
-# sim_type=elecsim
-# sim_type=calib
-sim_type=recQTMLE
+sim_type=${1:-"detsim"}; shift
 
 # sname=(C14)
 # sname=(Co60 Cs137 Ge68 AmC Laser0.1 Laser0.05)
 sname=(Co60 Cs137 Ge68 AmC Laser0.1 Laser0.05)
 # sname=(e+ SpaNeu)
-
-
+ 
+sim_types=(detsim elecsim calib recQTMLE)
+if [[ ! ${sim_types[@]} =~ $sim_type ]];then
+    echo "Wrong sim_type! Choose from: ${sim_types[@]}"
+    exit 1
+fi
 radioS=(Co60 Cs137 Ge68 AmC)
 calibS=(Co60 Cs137 Ge68 AmC Laser0.1 Laser0.05)
 evtPerJob=1000

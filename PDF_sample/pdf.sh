@@ -19,6 +19,7 @@ checkExist(){
 }
 
 input1=$1; shift
+echo "`date` on `hostname`: `whoami` runs step $input1." >> pdf_recorder.txt
 sname=(Ge68 Laser0.05)
 if [[ $input1 == 0 ]];then
     cd cmt
@@ -88,5 +89,6 @@ elif [[ $input1 == 4 ]];then
     cp ../share/Laser0.05/GridMu_RealAdd/LnPEMapFile_Ek.root nPEMap
     cp ../share/timePDF/TimePdfFile.root TimePdf
     cp ../GenQPDF/NPEQ/AvgNPEQpdf.root ChargeSpec
+    ### CalibPMTPara not used in OMILREC or other alg
     cd $path0
 fi
