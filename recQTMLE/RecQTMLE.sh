@@ -18,7 +18,7 @@ checkExist(){
 }
 
 input1=$1; shift
-echo "`date` on `hostname`: `whoami` runs step $input1." >> recorder_recQTMLE.txt
+echo "`date` on `hostname`: `whoami` runs step $input1." >> recorder_RecQTMLE.txt
 sname=(AmC Co60 Cs137 Ge68)
 if [[ $input1 == 1 ]];then
     mkdir -p AssembFiles

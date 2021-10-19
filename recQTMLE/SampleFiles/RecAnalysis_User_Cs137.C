@@ -279,7 +279,7 @@ void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, c
 
         
         cout<<sim_ch->GetEntries()<< '\t' << elec_ch->GetEntries()<< '\t' << rec_ch->GetEntries()<< endl;
-        if(elec_ch->GetEntries()!=rec_ch->GetEntries()) continue;
+        // if(elec_ch->GetEntries()!=rec_ch->GetEntries()) continue;
 
         int badfile = 0;
         for(int i=0; i<rec_ch->GetEntries(); i++){
@@ -291,12 +291,15 @@ void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, c
                 if(*iter<simk) simk = *iter;
                 iter++;
             }
-            if(simk>500) break;
+            // if(simk>500) break;
+            if(simk>sim_ch->GetEntries()) break;
             sim_ch->GetEntry(simk);
 
             if(QEn/edep < 0.7) badfile++;
         }
-        if(badfile>5) {cout<< ">>>>>>>>>>>>>>> Find unmatch file <<<<<<<<<<<<<<<"<<endl;continue;}
+        // if(badfile>10) {
+        if(badfile>(sim_ch->GetEntries()*0.1)) {
+            cout<< ">>>>>>>>>>>>>>> Find unmatch file <<<<<<<<<<<<<<<"<<endl;continue;}
 
         for(int i=0; i<rec_ch->GetEntries(); i++){
             elec_ch->GetEntry(i);
@@ -307,7 +310,8 @@ void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, c
                 if(*iter<simk) simk = *iter;
                 iter++;
             }
-            if(simk>500) break;
+            // if(simk>500) break;
+            if(simk>sim_ch->GetEntries()) break;
             sim_ch->GetEntry(simk);
 
             rectree->Fill(); 

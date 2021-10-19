@@ -281,7 +281,7 @@ void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, c
 
         
         cout<<sim_ch->GetEntries()<< '\t' << elec_ch->GetEntries()<< '\t' << rec_ch->GetEntries()<< endl;
-        if(elec_ch->GetEntries()!=rec_ch->GetEntries()) continue;
+        // if(elec_ch->GetEntries()!=rec_ch->GetEntries()) continue;
             
         /*
         int badfile = 0;

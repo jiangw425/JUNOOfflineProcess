@@ -2,6 +2,7 @@
 path0=`pwd`
 echo -e "\nA new auto_sub job is running from here: `hostname` at `date`"
 sim_type=${1:-"detsim"}; shift
+jobN=${1:-"20"}; shift
 
 sim_types=(detsim elecsim calib recQTMLE)
 if [[ ! ${sim_types[@]} =~ ${sim_type} ]];then
@@ -23,7 +24,7 @@ do
         dir=`head -n $nn $tmpname | tail -n 1`
         cd $dir/run
         jobnum=`ls *.sh | wc -l`
-        if [[ $jobnum -eq 20 ]];then
+        if [[ $jobnum -eq $jobN ]];then
             job0=`find -name "*_0.sh"`
             jobname=`echo ${job0%[0]*}`
             #sckout=`bash ~jiangw/sck.sh ../log | head -n 1 | cut -d' ' -f2`
@@ -43,7 +44,7 @@ do
             hep_sub ${jobname}"%{ProcId}".sh -n $jobnum -e /dev/null -o /dev/null
             #fi
         else
-            echo "$dir job number not 20"
+            echo "$dir job number not $jobN"
         fi
         let "nn=nn+1"
         cd $path0

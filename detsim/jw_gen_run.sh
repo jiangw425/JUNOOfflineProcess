@@ -29,6 +29,7 @@ localenv="/junofs/users/jiangw/J21v1r0-Pre2/bashrc"
 C14_detsim_path="/afs/ihep.ac.cn/users/v/valprod0/Pre-Releases/J21v1r0-Pre2/11/C14"
 SpaNeu_input="/junofs/production/data-production/Pre-Releases/J21v1r0-Pre0/SpallationNeutron/output_neu.root"
 maskOpt="--real-surface-in-cd --enable-optical-surface-in-cd --enable-strut-optical-surface --real-mask-tail --enable-mask-tail-surface"
+# maskOpt="--real-surface-in-cd --real-mask-tail"
 recMapPath="/scratchfs/juno/jiangw/give2myself/11/recMap"
 
 detsim_gen(){
@@ -63,7 +64,7 @@ recQTMLE_gen(){
 }
 
 if [[ $sname == "e+" ]];then
-    if [[ `echo $e_energy | grep \~` != "" ]];then
+    if [[ `echo $e_energy | grep -o \~ | wc -l` -eq 1 ]];then
         is_energy_range=1
         e_min=`echo $e_energy | cut -d~ -f1`
         e_max=`echo $e_energy | cut -d~ -f2`
@@ -85,19 +86,17 @@ rm -rf run/*${sim_type}*.sh*
 
 for((n=0;n<$jobnum;n++))
 do
-    name=run/${sname}_${pos_xyz}_${sim_type}_${n}.sh
+    if [[ $sname == "e+" ]];then
+        name=run/${sname}_${e_energy}MeV_${sim_type}_${n}.sh
+    else
+        name=run/${sname}_${pos_xyz}_${sim_type}_${n}.sh
+    fi
     seed=$(($seed_start+$n))
     echo "#!/bin/bash" > $name
     echo "cd ${path0}/${dir}" >> $name
     # echo "\$JUNOTESTROOT/production/libs/jobmom.sh \$\$ >& log/log-${sim_type}-${n}.txt.mem.usage &" >> $name
     if [[ $sim_type == "detsim" ]];then
-        if [[ ${radioS[@]} =~ ${sname} ]];then
-            detsim_special_opt="--source_weight_QC --OffsetInX ${pos_x} --OffsetInY ${pos_y} --OffsetInZ ${pos_z} hepevt --exe ${sname} --global-position ${pos_x} ${pos_y} ${pos_z}"
-        elif [[ ${sname:0:5} == "Laser" ]];then
-            detsim_special_opt="photon --totalphotons ${laserN} --global-position ${pos_x} ${pos_y} ${pos_z}"
-        elif [[ $sname == "C14" ]];then
-            detsim_special_opt="gendecay --nuclear ${sname} ${pos_opt}"
-        elif [[ $sname == "e+" ]];then
+        if [[ $sname == "e+" ]];then
             detsim_special_opt="gun --particles ${sname} ${pos_opt} "
             if [[ $is_energy_range -eq 0 ]];then
                 detsim_special_opt+="--momentums ${e_energy} "
@@ -105,6 +104,12 @@ do
                 detsim_special_opt+="--momentums ${e_min} --momentums-mode Range --momentums-extra-params ${e_max} "
             fi
             detsim_special_opt+="--momentums-interp KineticEnergy"
+        elif [[ ${sname:0:5} == "Laser" ]];then
+            detsim_special_opt="photon --totalphotons ${laserN} --global-position ${pos_x} ${pos_y} ${pos_z}"
+        elif [[ $sname == "C14" ]];then
+            detsim_special_opt="gendecay --nuclear ${sname} ${pos_opt}"
+        elif [[ ${radioS[@]} =~ ${sname} ]];then
+            detsim_special_opt="--source_weight_QC --OffsetInX ${pos_x} --OffsetInY ${pos_y} --OffsetInZ ${pos_z} hepevt --exe ${sname} --global-position ${pos_x} ${pos_y} ${pos_z}"
         elif [[ $sname == "SpaNeu" ]];then
             SNindex=$(($n*$evtPerJob%3445741))
             detsim_special_opt="neutron --input ${SpaNeu_input} --index ${SNindex}"
@@ -131,8 +136,12 @@ do
     fi
 
     commonOut="--output root/${sim_type}-${n}.root --user-output user-root/user-${sim_type}-${n}.root"
-    if [[ $sim_type == elecsim ]] && [[ $sname == "C14" ]] || [[ $sname == "e+" ]];then
-        ${sim_type}_woC14_gen
+    if [[ $sim_type == "elecsim" ]];then
+        if [[ $sname == "C14" ]] || [[ $sname == "e+" ]];then
+            ${sim_type}_woC14_gen
+        else
+            ${sim_type}_gen
+        fi
     else
         ${sim_type}_gen
     fi
