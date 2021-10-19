@@ -58,7 +58,7 @@ do
         fi
     elif [[ $sim_type == "calib" ]];then
         evtPerJob=-1
-    elif [[ $sim_type == "rec_QTMLE" ]];then
+    elif [[ $sim_type == "recQTMLE" ]];then
         evtPerJob=-1
     fi
 
