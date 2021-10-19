@@ -27,7 +27,7 @@ float emean;
 float esigma;
 TH1F* h_E;
 
-void RecAnalysis_User() 
+void RecAnalysis_User_Co60_START() 
 {
     void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, const char* elecFilePath, int posid, int jobNum, int baseline);
     emean = 0;
@@ -37,7 +37,7 @@ void RecAnalysis_User()
     //std::string subdir = "e+_1.022MeV";
     
     int evtnum = 0;
-    int jobnum = 40;
+    int jobnum = FILENUM;
     int Energy[9] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
     
     string posdir = "/junofs/users/huanggh/Data/ACU_CLS_3D_Pos";
@@ -78,9 +78,9 @@ void RecAnalysis_User()
     for(int jobA=START;jobA<START+1;jobA++) {
         int seed = 0;
     
-        TString recdir = Form("/afs/ihep.ac.cn/users/v/valprod0/Pre-Releases/J21v1r0-Pre2/1/ACU/%s/%s_" + StrPosX->at(jobA) + "_" + StrPosY->at(jobA) + "_" + StrPosZ->at(jobA) + "/rec_%s/user-root", calibsource.c_str(), calibsource.c_str(), vmethod.c_str());
-        TString simdir = Form("/afs/ihep.ac.cn/users/v/valprod0/Pre-Releases/J21v1r0-Pre2/1/ACU/%s/%s_" + StrPosX->at(jobA) + "_" + StrPosY->at(jobA) + "_" + StrPosZ->at(jobA) + "/detsim_and_elecsim/user-root", calibsource.c_str(), calibsource.c_str());
-        TString elecdir = Form("/afs/ihep.ac.cn/users/v/valprod0/Pre-Releases/J21v1r0-Pre2/1/ACU/%s/%s_" + StrPosX->at(jobA) + "_" + StrPosY->at(jobA) + "_" + StrPosZ->at(jobA) + "/detsim_and_elecsim/user-root", calibsource.c_str(), calibsource.c_str());
+        TString recdir = Form("DATAPATH/ACU/%s/%s_" + StrPosX->at(jobA) + "_" + StrPosY->at(jobA) + "_" + StrPosZ->at(jobA) +   "/rec%s/user-root", calibsource.c_str(), calibsource.c_str(), vmethod.c_str());
+        TString simdir = Form("DATAPATH/ACU/%s/%s_" + StrPosX->at(jobA) + "_" + StrPosY->at(jobA) + "_" + StrPosZ->at(jobA) +  "/detsim/user-root", calibsource.c_str(), calibsource.c_str());
+        TString elecdir= Form("DATAPATH/ACU/%s/%s_" + StrPosX->at(jobA) + "_" + StrPosY->at(jobA) + "_" + StrPosZ->at(jobA) + "/elecsim/user-root", calibsource.c_str(), calibsource.c_str());
         cout<< recdir << endl;
         RecAnalysisSingleEnergy(simdir, recdir, elecdir, jobA, jobnum, seed);
     }
@@ -104,7 +104,7 @@ void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, c
     
 
     ifstream  failIDin;
-    failIDin.open("errorfileid.txt", ios::in);
+    failIDin.open("errorfileid_START.txt", ios::in);
     vector<int> vFailId;
     int idtemp = 1;
     while(failIDin>>idtemp) {
@@ -122,7 +122,7 @@ void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, c
         if(isContinue) continue;
         ss  <<  k;
         ss >> n_flag;
-        TString recFileAdd = Form("%s/user-rec-%s.root",recFilePath,n_flag.c_str());
+        TString recFileAdd = Form("%s/user-recQTMLE-%s.root",recFilePath,n_flag.c_str());
         TString simFileAdd = Form("%s/user-detsim-%s.root",simFilePath,n_flag.c_str());
         TString elecFileAdd = Form("%s/user-elecsim-%s.root",elecFilePath,n_flag.c_str());
         if(!TFile::Open(recFileAdd)) continue;
@@ -351,4 +351,6 @@ void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, c
     delete hBkg_QTEn;
     delete hBkg_QEn;
     delete hBkg_NPE;
+    
+    cout << "Successfully" << endl;
 }

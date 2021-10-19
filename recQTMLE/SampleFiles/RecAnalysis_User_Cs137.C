@@ -17,17 +17,17 @@ using std::endl;
 const int parId = 4;
 const int eid = 0;
 const int wid = 0;
-const double SigE = 1.022;
+const double SigE = 0.6617;
 const int CalibPosNum = 311;
 const int startseed = 0; 
-const std::string calibsource="AmC";
+const std::string calibsource="Cs137";
 const std::string vmethod="QTMLE";
 
 float emean;
 float esigma;
 TH1F* h_E;
 
-void RecAnalysis_User_AmC_START() 
+void RecAnalysis_User_Cs137_START() 
 {
     void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, const char* elecFilePath, int posid, int jobNum, int baseline);
     emean = 0;
@@ -37,7 +37,7 @@ void RecAnalysis_User_AmC_START()
     //std::string subdir = "e+_1.022MeV";
     
     int evtnum = 0;
-    int jobnum = 40;
+    int jobnum = FILENUM;
     int Energy[9] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
     
     string posdir = "/junofs/users/huanggh/Data/ACU_CLS_3D_Pos";
@@ -78,9 +78,9 @@ void RecAnalysis_User_AmC_START()
     for(int jobA=START;jobA<START+1;jobA++) {
         int seed = 0;
     
-        TString recdir = Form("/afs/ihep.ac.cn/users/v/valprod0/Pre-Releases/J21v1r0-Pre2/1/ACU-CLS/%s/%s_" + StrPosX->at(jobA) + "_" + StrPosY->at(jobA) + "_" + StrPosZ->at(jobA) +  "/rec%s/user-root", calibsource.c_str(), calibsource.c_str(), vmethod.c_str());
-        TString simdir = Form("/afs/ihep.ac.cn/users/v/valprod0/Pre-Releases/J21v1r0-Pre2/1/ACU-CLS/%s/%s_" + StrPosX->at(jobA) + "_" + StrPosY->at(jobA) + "_" + StrPosZ->at(jobA) + "/detsim/user-root", calibsource.c_str(), calibsource.c_str());
-        TString elecdir =Form("/afs/ihep.ac.cn/users/v/valprod0/Pre-Releases/J21v1r0-Pre2/1/ACU-CLS/%s/%s_" + StrPosX->at(jobA) + "_" + StrPosY->at(jobA) + "_" + StrPosZ->at(jobA) +"/elecsim/user-root", calibsource.c_str(), calibsource.c_str());
+        TString recdir = Form("DATAPATH/ACU/%s/%s_" + StrPosX->at(jobA) + "_" + StrPosY->at(jobA) + "_" + StrPosZ->at(jobA) +   "/rec%s/user-root", calibsource.c_str(), calibsource.c_str(), vmethod.c_str());
+        TString simdir = Form("DATAPATH/ACU/%s/%s_" + StrPosX->at(jobA) + "_" + StrPosY->at(jobA) + "_" + StrPosZ->at(jobA) +  "/detsim/user-root", calibsource.c_str(), calibsource.c_str());
+        TString elecdir= Form("DATAPATH/ACU/%s/%s_" + StrPosX->at(jobA) + "_" + StrPosY->at(jobA) + "_" + StrPosZ->at(jobA) + "/elecsim/user-root", calibsource.c_str(), calibsource.c_str());
         cout<< recdir << endl;
         RecAnalysisSingleEnergy(simdir, recdir, elecdir, jobA, jobnum, seed);
     }
@@ -101,7 +101,7 @@ void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, c
     
 
     ifstream  failIDin;
-    failIDin.open("errorfileid.txt", ios::in);
+    failIDin.open("errorfileid_START.txt", ios::in);
     vector<int> vFailId;
     int idtemp = 1;
     while(failIDin>>idtemp) {
@@ -117,13 +117,12 @@ void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, c
             if(vFailId[id]==k) {isContinue = true;break;}
         }
         if(isContinue) continue;
-        // if(k==54961) continue;
         ss  <<  k;
         ss >> n_flag;
         TString recFileAdd = Form("%s/user-recQTMLE-%s.root",recFilePath,n_flag.c_str());
         TString simFileAdd = Form("%s/user-detsim-%s.root",simFilePath,n_flag.c_str());
         TString elecFileAdd = Form("%s/user-elecsim-%s.root",elecFilePath,n_flag.c_str());
-        if(!TFile::Open(recFileAdd)) continue;
+
         ch_rec.Add(recFileAdd);
         ch_sim.Add(simFileAdd);
         ch_elec.Add(elecFileAdd);
@@ -207,7 +206,6 @@ void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, c
     while (( recChEl=(TChainElement*)recnext() )){
         TFile* recf = TFile::Open(recChEl->GetTitle(), "READ");
         cout << recChEl->GetTitle() << endl;
-        if(!recf) continue;
         if(recf->TestBit(TFile::kRecovered)) continue;
         if(recf->IsZombie()) continue;
         TTree* rec_ch = (TTree*)recf -> Get("TRec");
@@ -282,8 +280,7 @@ void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, c
         
         cout<<sim_ch->GetEntries()<< '\t' << elec_ch->GetEntries()<< '\t' << rec_ch->GetEntries()<< endl;
         if(elec_ch->GetEntries()!=rec_ch->GetEntries()) continue;
-            
-        /*
+
         int badfile = 0;
         for(int i=0; i<rec_ch->GetEntries(); i++){
             elec_ch->GetEntry(i);
@@ -299,26 +296,27 @@ void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, c
 
             if(QEn/edep < 0.7) badfile++;
         }
-        if(badfile>5) {
-            cout<< ">>>>>>>>>>>>>>> Find unmatch file <<<<<<<<<<<<<<<"<<endl;
-            delete rec_ch;
-            delete elec_ch;
-            delete sim_ch;
-            delete recf;
-            delete elecf;
-            delete simf;
-            continue;
-        }
-        */
+        if(badfile>5) {cout<< ">>>>>>>>>>>>>>> Find unmatch file <<<<<<<<<<<<<<<"<<endl;continue;}
+
         for(int i=0; i<rec_ch->GetEntries(); i++){
+            elec_ch->GetEntry(i);
             rec_ch->GetEntry(i);
+            int simk = entries->at(0);
+            vector<int>::iterator iter = entries->begin();
+            while(iter!=entries->end()) {
+                if(*iter<simk) simk = *iter;
+                iter++;
+            }
+            if(simk>500) break;
+            sim_ch->GetEntry(simk);
+
             rectree->Fill(); 
 
-            if(dTriggerT>5.e5) {hBkg_QTEn->Fill(QTEn); hBkg_QEn->Fill(QEn);}
-            else {
+            if(edep < SigE*(1.-1.e-4)) {hBkg_QTEn->Fill(QTEn); hBkg_QEn->Fill(QEn);}
+            else if(edep < SigE*(1.+1.e-4)) {
                 if(QTR<17200) hSignal_QTEn->Fill(QTEn);
                 if(QR<17200) hSignal_QEn->Fill(QEn);
-            } 
+            } else {hBkg_QTEn->Fill(QTEn); hBkg_QEn->Fill(QEn);}
   
         }
 
@@ -337,11 +335,12 @@ void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, c
     hSignal_QTEn->Write();
     hSignal_QEn->Write();
 
-    delete rectree;
     sfile->Close();
     
     delete hSignal_QTEn;
     delete hSignal_QEn;
     delete hBkg_QTEn;
     delete hBkg_QEn;
+
+    cout << "Successfully" << endl;
 }

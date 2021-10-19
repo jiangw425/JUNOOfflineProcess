@@ -17,7 +17,7 @@ do
     fi
 done < $tmpfile
 ### only leave root and user-root dir
-for n in {0..3}
+for n in {0..5}
 do
     emptyDir=`find . -type d -empty`
     echo $emptyDir

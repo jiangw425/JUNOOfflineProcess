@@ -3,4 +3,5 @@ Different in detsim
 00: 在上述基础，修复了PMT的一个BUG，使得光子击中PMT的分布正常了
 
 1 : 完整使用5个选项,此时挡光板和PMT保护罩的反射率为60%,支撑杆的反射率为50%
+    --real-surface-in-cd --enable-optical-surface-in-cd --enable-strut-optical-surface --real-mask-tail --enable-mask-tail-surface
 11: 在上述基础，修复了PMT的一个BUG，使得光子击中PMT的分布正常了

@@ -11,21 +11,13 @@ filenum=20
 envpath=`echo ${yourenv%/*}`
 copyPath=/junofs/users/jiangw/GitCode/JUNOOfflineProcess/recQTMLE
 
-if [[ ! -f recorder_RecQTMLE.txt ]];then
-    rsync -av $copyPath/* .
-else
-    rsync -av --exclude={"amd64_linux26","cmt","python","GenQPDF/amd64_linux26","GenQPDF/cmt","GenQPDF/python"} $copyPath/* .
-fi
-# rsync $copyPath/../autoRun_calibration.sh .
+rsync -av $copyPath/* .
 
-cd share
-sed -e "s#MYTOP#${envpath}#g" -e "s#ACUCLSPATH#${acuclspath}#g" -e "s#FILENUM#${filenum}#g" ${copyPath}/share/gen.sh > gen.sh
+cd SampleFiles
+for s in AmC Ge68 Co60 Cs137
+do
+    sed -e "s#DATAPATH#${datapath}#g" -e "s#FILENUM#${filenum}#g" ${copyPath}/SampleFiles/RecAnalysis_User_${s}.C > RecAnalysis_User_${s}.C
+done
 cd ..
-
-cd GenQPDF/share
-sed "s#MYTOP#${envpath}#g" ${copyPath}/GenQPDF/share/gen-rec.sh > gen-rec.sh
-cd ../..
-
-sed -e "s#LOCALENV#${yourenv}#g" ${copyPath}/pdf.sh > pdf.sh
 
 echo "`date` on `hostname`: `whoami` runs COPY script." >> recorder_RecQTMLE.txt
