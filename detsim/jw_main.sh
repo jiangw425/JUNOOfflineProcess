@@ -5,7 +5,7 @@ sim_type=${1:-"detsim"}; shift
 # sname=(Co60 Cs137 Ge68 AmC Laser0.1 Laser0.05)
 # sname=(Co60 Cs137 Ge68 AmC Laser0.1 Laser0.05)
 # sname=(e+ SpaNeu)
-sname=(e+)
+sname=(SpaNeu)
  
 sim_types=(detsim elecsim calib recQTMLE)
 if [[ ! ${sim_types[@]} =~ $sim_type ]];then
@@ -37,6 +37,8 @@ do
         # e_energies=0_1_2_3_4_5_6_7_8_9_10_0~10
         e_energies=0_1_2_3_4_5_6_7_8_9_10
         jobnum=100
+    elif [[ $s == "SpaNeu" ]];then
+        jobnum=5000
     fi
 
     if [[ $sim_type == "detsim" ]];then
@@ -46,6 +48,8 @@ do
             laserN=22000
         elif [[ $s == "e+" ]];then
             evtPerJob=500
+        elif [[ $s == "SpaNeu" ]];then
+            evtPerJob=100
         fi
     elif [[ $sim_type == "elecsim" ]];then
         evtPerJob=-1

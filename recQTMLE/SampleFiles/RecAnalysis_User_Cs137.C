@@ -195,7 +195,7 @@ void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, c
     rectree->Branch("time",&time,"time/F");
     rectree->Branch("triggerT",&triggerT,"triggerT/F");
     rectree->Branch("dTriggerT",&dTriggerT,"dTriggerT/F");
-    rectree->Branch("corrEvtT",&corrEvtT,"corrEvtT/F");
+    rectree->Branch("corrEvtT",&corrEvtT,"corrEvtT/D");
 
     rectree->Branch("memory",&memory,"memory/F");
     rectree->Branch("edep",&edep,"edep/F");

@@ -86,6 +86,10 @@ rm -rf run/*${sim_type}*.sh*
 
 for((n=0;n<$jobnum;n++))
 do
+    if [[ $jobnum -gt 200 ]] && [[ $n*10%$jobnum -eq 0 ]];then
+        echo "Generating... $sname $sim_type ($n/$jobnum)"
+    fi
+
     if [[ $sname == "e+" ]];then
         name=run/${sname}_${e_energy}MeV_${sim_type}_${n}.sh
     else

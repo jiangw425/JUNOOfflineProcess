@@ -33,10 +33,25 @@ if [[ $input1 == 1 ]];then
         cd ..
     done
     cd $path0
+    mkdir -p e+
+    cd e+
+    cp ${path0}/SampleFiles/RecAnalysis_User_eplus.C .
+    bash ${path0}/gen_eplus.sh
+    cd $path0
 elif [[ $input1 == 2 ]];then
-    echo ""
+    echo "Energy Resolution e+"
+    cd Eresolution_e+
+    root -b -l -q Resolution_Draw_1fig.C
+    root -b -l -q Resolution_Draw_1fig.C
+    root Resolution_Draw_1fig.C
+    cd $path0
 elif [[ $input1 == 3 ]];then
-    echo ""
+    echo "Radial Resolution e+"
+    cd Rresolution_e+
+    root -b -l -q RRes.C
+    root -b -l -q RRes.C
+    root RRes.C
+    cd $path0
 elif [[ $input1 == 4 ]];then
     echo ""
 fi

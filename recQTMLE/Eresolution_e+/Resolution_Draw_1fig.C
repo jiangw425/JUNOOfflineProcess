@@ -1,7 +1,11 @@
 #include<vector>
 const int eNum = 9;
-const int cNum = 3;
-const bool enableUpdateBin = false;
+const int cNum = 1;//3: QTMLE,QLH,TLH?
+const bool enableUpdateBin = true;
+// std::string path[2] = {
+//     "/scratchfs/juno/jiangw/J21_result_new/00/e+/",
+//     "/scratchfs/juno/jiangw/J21_result_new/11/e+/"
+// };
 void Resolution_Draw_1fig() {
     
     double Visb[eNum] = {};
@@ -119,7 +123,7 @@ void Resolution_Draw_1fig() {
     
     for(int  ci=0;ci<cNum;ci++) {
 
-        TString recdir = Form("/junofs/users/huanggh/EnergyRec/EnergyResAnalysis/FitResolution/CalibRec_J20v2r0-Pre2_RefAmC_6pe/Gr%d/",ci);
+        TString recdir = Form("../e+/");
         for(int kNum=0;kNum<eNum;kNum++) {
             double ra = TrueEnergy[kNum]/2.;
             double rb = TrueEnergy[kNum]*2.;
@@ -129,8 +133,8 @@ void Resolution_Draw_1fig() {
             TH1F* h_E1 = new TH1F(Form("h_E1_%0.2fMeV",TrueEnergy[kNum]),Form("E1_{rec}_%0.2fMeV",TrueEnergy[kNum]), int(binNum[1][ci][kNum]), ra, rb);
             TH1F* h_E2 = new TH1F(Form("h_E2_%0.2fMeV",TrueEnergy[kNum]),Form("E2_{rec}_%0.2fMeV",TrueEnergy[kNum]), int(binNum[2][ci][kNum]), ra, rb);
             TH1F* h_E3 = new TH1F(Form("h_E3_%0.2fMeV",TrueEnergy[kNum]),Form("E3_{rec}_%0.2fMeV",TrueEnergy[kNum]), int(binNum[3][ci][kNum]), ra, rb);
-            TFile* sfile = TFile::Open(recdir+Form("Assemb_%d.root",kNum),"READ");
-            std::cout<< recdir + Form("Assemb_%d.root",kNum) <<std::endl;
+            TFile* sfile = TFile::Open(recdir+Form("%dMeV/Assemb.root",kNum),"READ");
+            std::cout<< recdir + Form("%dMeV/Assemb.root",kNum) <<std::endl;
 
 
             TTree* stree = (TTree*)sfile->Get("evt");
@@ -139,21 +143,21 @@ void Resolution_Draw_1fig() {
             stree->SetBranchAddress("edep",&edep);
             bool checkQ = true;
             if(ci==0&&checkQ) {
-                stree->SetBranchAddress("m_QEn",&n_fit);
-                stree->SetBranchAddress("recQx",&rec_x);
-                stree->SetBranchAddress("recQy",&rec_y);
-                stree->SetBranchAddress("recQz",&rec_z);
-            } else if(ci==0&&!checkQ) {
-                stree->SetBranchAddress("m_QEn",&n_fit);
-                stree->SetBranchAddress("recQx",&rec_x);
-                stree->SetBranchAddress("recQy",&rec_y);
-                stree->SetBranchAddress("recQz",&rec_z);
-                stree->SetBranchAddress("m_QR",&recR);
-            } else if(ci<=1&&checkQ) {
                 stree->SetBranchAddress("m_QTEn",&n_fit);
                 stree->SetBranchAddress("recx",&rec_x);
                 stree->SetBranchAddress("recy",&rec_y);
                 stree->SetBranchAddress("recz",&rec_z);
+            // } else if(ci==0&&!checkQ) { //this is for QMLE, not for QTMLE, attention
+                // stree->SetBranchAddress("m_QEn",&n_fit);
+                // stree->SetBranchAddress("recQx",&rec_x);
+                // stree->SetBranchAddress("recQy",&rec_y);
+                // stree->SetBranchAddress("recQz",&rec_z);
+                // stree->SetBranchAddress("m_QR",&recR);
+            } else if(ci<=1&&checkQ) {
+                stree->SetBranchAddress("m_QEn",&n_fit);
+                stree->SetBranchAddress("recQx",&rec_x);
+                stree->SetBranchAddress("recQy",&rec_y);
+                stree->SetBranchAddress("recQz",&rec_z);
             } else if(ci<=2&&checkQ) {
                 stree->SetBranchAddress("m_QEn",&n_fit);
                 stree->SetBranchAddress("recx",&rec_x);
@@ -193,11 +197,11 @@ void Resolution_Draw_1fig() {
             //VisbErr[kNum] = MeanErr[kNum]*1.022/Mean[0];
             
             if(ci==0) {
-                Visb[kNum] = mean*2.223/2.46;
-                VisbErr[kNum] = MeanErr[kNum]*2.223/2.46;
-            } else if(ci==1) {
                 Visb[kNum] = mean*2.223/2.464;
                 VisbErr[kNum] = MeanErr[kNum]*2.223/2.464;
+            } else if(ci==1) {
+                Visb[kNum] = mean*2.223/2.46;
+                VisbErr[kNum] = MeanErr[kNum]*2.223/2.46;
             } else if(ci==2) {
                 Visb[kNum] = mean*2.223/2.467;
                 VisbErr[kNum] = MeanErr[kNum]*2.223/2.467;
@@ -249,8 +253,10 @@ void Resolution_Draw_1fig() {
             delete h_E1;
             delete h_E2;
             delete h_E3;
+            sfile->Close();
         }
-         
+        
+        std::cout << std::endl;
         TGraphErrors* grRes = new TGraphErrors(eNum, Visb, Res, VisbErr, ResErr);
         TF1* resfun= new TF1("resfun", "TMath::Sqrt([0]*[0]/x+[1]*[1]+[2]*[2]/x/x)", 0.5, 13);
         resfun->SetParNames("a", "b", "c");
@@ -264,13 +270,13 @@ void Resolution_Draw_1fig() {
         double a = resfun->GetParameter(0);
         double b = resfun->GetParameter(1);
         double c = resfun->GetParameter(2);
-        std::cout<< "CD Energy resolution at 1 MeV: " << sqrt(a*a + b*b + c*c) << '\t' << sqrt(a*a + b*b*1.6*1.6 + c*c/1.6/1.6) << std::endl;
+        std::cout<< "CD <17.2m      Energy resolution at 1 MeV:\t" << sqrt(a*a + b*b + c*c) << '\t' << sqrt(a*a + b*b*1.6*1.6 + c*c/1.6/1.6) << std::endl;
 
         grRes->SetMarkerStyle(EMarker[ci]);
         grRes->SetMarkerColor(EColor[ci]);
         grRes->SetLineColor(EColor[ci]);
         grRes->SetTitle("");
-        grRes->GetXaxis()->SetTitle("E_{dep} [MeV]");
+        grRes->GetXaxis()->SetTitle("E_{rec} [MeV]");
         grRes->GetYaxis()->SetTitle("Energy resolution [%]");
         vecGr.push_back(grRes);
 
@@ -278,34 +284,40 @@ void Resolution_Draw_1fig() {
         TGraphErrors* grRes1 = new TGraphErrors(eNum, Visb1, Res1, VisbErr1, ResErr1);
         TF1* resfun1= new TF1("resfun1", "TMath::Sqrt([0]*[0]/x+[1]*[1]+[2]*[2]/x/x)", 0.5, 13);
         resfun1->SetParNames("a", "b", "c");
+        resfun1->SetParameter(0, 2.9);
+        resfun1->SetParameter(1, 0.7);
+        resfun1->SetParameter(2, 1.);
         resfun1->SetLineColor(EColor[ci]);
         grRes1->Fit("resfun1","QR");
         a = resfun1->GetParameter(0);
         b = resfun1->GetParameter(1);
         c = resfun1->GetParameter(2);
-        std::cout<< "CDV1 Energy resolution at 1 MeV: " << sqrt(a*a + b*b + c*c) << '\t' << sqrt(a*a + b*b*1.6*1.6 + c*c/1.6/1.6) << std::endl;
+        std::cout<< "CD <15.6m      Energy resolution at 1 MeV:\t" << sqrt(a*a + b*b + c*c) << '\t' << sqrt(a*a + b*b*1.6*1.6 + c*c/1.6/1.6) << std::endl;
         grRes1->SetMarkerStyle(EMarker[ci]);
         grRes1->SetMarkerColor(EColor[ci]);
         grRes1->SetLineColor(EColor[ci]);
         grRes1->SetTitle("");
-        grRes1->GetXaxis()->SetTitle("E_{dep} [MeV]");
+        grRes1->GetXaxis()->SetTitle("E_{rec} [MeV]");
         grRes1->GetYaxis()->SetTitle("Energy resolution [%]");
         vecGr1.push_back(grRes1);
 
         TGraphErrors* grRes2 = new TGraphErrors(eNum, Visb2, Res2, VisbErr2, ResErr2);
         TF1* resfun2= new TF1("resfun2", "TMath::Sqrt([0]*[0]/x+[1]*[1]+[2]*[2]/x/x)", 0.5, 13);
         resfun2->SetParNames("a", "b", "c");
+        resfun2->SetParameter(0, 2.9);
+        resfun2->SetParameter(1, 0.7);
+        resfun2->SetParameter(2, 1.);
         resfun2->SetLineColor(EColor[ci]);
         grRes2->Fit("resfun2","QR");
         a = resfun2->GetParameter(0);
         b = resfun2->GetParameter(1);
         c = resfun2->GetParameter(2);
-        std::cout<< "CDV1 Energy resolution at 1 MeV: " << sqrt(a*a + b*b + c*c) << '\t' << sqrt(a*a + b*b*1.6*1.6 + c*c/1.6/1.6) << std::endl;
+        std::cout<< "CD 15.6~17.2m  Energy resolution at 1 MeV:\t" << sqrt(a*a + b*b + c*c) << '\t' << sqrt(a*a + b*b*1.6*1.6 + c*c/1.6/1.6) << std::endl;
         grRes2->SetMarkerStyle(EMarker[ci]);
         grRes2->SetMarkerColor(EColor[ci]);
         grRes2->SetLineColor(EColor[ci]);
         grRes2->SetTitle("");
-        grRes2->GetXaxis()->SetTitle("E_{dep} [MeV]");
+        grRes2->GetXaxis()->SetTitle("E_{rec} [MeV]");
         grRes2->GetYaxis()->SetTitle("Energy resolution [%]");
         vecGr2.push_back(grRes2);
 
@@ -313,20 +325,23 @@ void Resolution_Draw_1fig() {
         TF1* resfun3= new TF1("resfun3", "TMath::Sqrt([0]*[0]/x+[1]*[1]+[2]*[2]/x/x)", 0.5, 13);
         resfun3->SetParNames("a", "b", "c");
         resfun3->SetLineColor(EColor[ci]);
+        resfun3->SetParameter(0, 2.9);
+        resfun3->SetParameter(1, 0.7);
+        resfun3->SetParameter(2, 1.);
         grRes3->Fit("resfun3","QR");
-        a = resfun->GetParameter(0);
-        b = resfun->GetParameter(1);
-        c = resfun->GetParameter(2);
-        std::cout<< "CDV1 Energy resolution at 1 MeV: " << sqrt(a*a + b*b + c*c) << '\t' << sqrt(a*a + b*b*1.6*1.6 + c*c/1.6/1.6) << std::endl;
+        a = resfun3->GetParameter(0);
+        b = resfun3->GetParameter(1);
+        c = resfun3->GetParameter(2);
+        std::cout<< "CD 17.2~17.39m Energy resolution at 1 MeV:\t" << sqrt(a*a + b*b + c*c) << '\t' << sqrt(a*a + b*b*1.6*1.6 + c*c/1.6/1.6) << std::endl;
         grRes3->SetMarkerStyle(EMarker[ci]);
         grRes3->SetMarkerColor(EColor[ci]);
         grRes3->SetLineColor(EColor[ci]);
         grRes3->SetTitle("");
-        grRes3->GetXaxis()->SetTitle("E_{dep} [MeV]");
+        grRes3->GetXaxis()->SetTitle("E_{rec} [MeV]");
         grRes3->GetYaxis()->SetTitle("Energy resolution [%]");
         vecGr3.push_back(grRes3);
- 
 
+        std::cout << std::endl;
     }
     BinNOut1.close();
     BinNOut2.close();
@@ -346,6 +361,7 @@ void Resolution_Draw_1fig() {
 
         cR0->Update();
         auto stats1 = (TPaveStats*)vecGr[ci]->GetListOfFunctions()->FindObject("stats");
+        if(!stats1) {cout <<"wow!null pointer!";return;}
         stats1->SetTextColor(EColor[ci]);
         stats1->SetTextSize(0.04);
         if(ci<3) {stats1->SetX1NDC(1.0 - ci*stW - stW); stats1->SetX2NDC(1.0 - ci*stW); stats1->SetY1NDC(0.66*(1. - topMargin + 0.05));stats1->SetY2NDC(0.91*(1.-topMargin + 0.05));}
@@ -434,12 +450,12 @@ void Resolution_Draw_1fig() {
 
     auto  legend = new TLegend(0.6,0.4,0.88,0.6);
     
-    TLegendEntry* l1 = legend->AddEntry(vecGr1[0],"QMLE","lp");
+    TLegendEntry* l1 = legend->AddEntry(vecGr1[0],"QTMLE","lp");
     l1->SetTextColor(EColor[0]);
-    TLegendEntry* l2 = legend->AddEntry(vecGr1[1],"QTMLE","lp");
-    l2->SetTextColor(EColor[1]);
-    TLegendEntry* l3 = legend->AddEntry(vecGr2[2],"TLH+QMLE","lp");
-    l3->SetTextColor(EColor[2]);
+    // TLegendEntry* l2 = legend->AddEntry(vecGr1[1],"QTMLE","lp");
+    // l2->SetTextColor(EColor[1]);
+    // TLegendEntry* l3 = legend->AddEntry(vecGr2[2],"TLH+QMLE","lp");
+    // l3->SetTextColor(EColor[2]);
 
     legend->SetFillStyle(0);
     legend->SetTextSize(0.05);
