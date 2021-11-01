@@ -47,10 +47,10 @@ void EResCompare_Ge68()
 
 
         TFile* filetemp = TFile::Open(Form("../AssembFiles/%s/Assemb_QTMLE_%d.root", (particle[parId-1]).c_str(), posid));
-        TH1D* hQTEnSpec = (TH1D*)filetemp->Get("hNPE");
+        TH1D* hQTEnSpec = (TH1D*)filetemp->Get("hSignal_QTEn");
 
         TFile* filetemp2 = TFile::Open(Form("../AssembFiles/%s/Assemb_QTMLE_%d.root", (particle[parId-1]).c_str(), posid));
-        TH1D* hQEnSpec = (TH1D*)filetemp2->Get("hNPE");
+        TH1D* hQEnSpec = (TH1D*)filetemp2->Get("hSignal_QEn");
 
         
         if(hQTEnSpec->GetEntries()<100) continue;

@@ -80,6 +80,7 @@ if [[ ! -d $dir ]];then
     mkdir -p $dir/user-root
     mkdir -p $dir/root
     mkdir -p $dir/log
+    echo "$dir/run" >> $path0/${sim_type}_subdirs.txt
 fi
 cd $dir
 rm -rf run/*${sim_type}*.sh*

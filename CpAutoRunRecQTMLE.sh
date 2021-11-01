@@ -13,6 +13,7 @@ envpath=`echo ${yourenv%/*}`
 copyPath=/junofs/users/jiangw/GitCode/JUNOOfflineProcess/recQTMLE
 
 rsync -av $copyPath/* .
+sed "s#DATAPATH#${datapath}#g" ${copyPath}/find_errfiles.sh > find_errfiles.sh
 
 cd SampleFiles
 for s in AmC Ge68 Co60 Cs137

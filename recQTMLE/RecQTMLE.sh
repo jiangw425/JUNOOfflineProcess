@@ -27,9 +27,10 @@ if [[ $input1 == 1 ]];then
     do
         mkdir -p $s
         cd $s
-        mkdir -p run log cfile
+        mkdir -p run log cfile err
         cp ${path0}/SampleFiles/RecAnalysis_User_${s}.C .
         bash ${path0}/gen.sh $s
+        bash ${path0}/find_errfiles.sh $s
         cd ..
     done
     cd $path0

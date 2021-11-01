@@ -2,6 +2,8 @@
 const int eNum = 9;
 const int cNum = 2;//3: QTMLE,QLH,TLH?
 const bool enableUpdateBin = true;
+double AmC_rec_E[2] = {2.447,2.520};
+double energyscale[2] = {2.223/AmC_rec_E[0], 2.223/AmC_rec_E[1]};// divide AmC rec energy
 std::string path[2] = {
     "/scratchfs/juno/jiangw/J21_result_new/00/e+/",
     "/scratchfs/juno/jiangw/J21_result_new/11/e+/"
@@ -198,8 +200,8 @@ void EResDiff() {
             //VisbErr[kNum] = MeanErr[kNum]*1.022/Mean[0];
             
             // if(ci==0) {
-                Visb[kNum] = mean*2.223/2.464;
-                VisbErr[kNum] = MeanErr[kNum]*2.223/2.464;
+                Visb[kNum] = mean*energyscale[ci];
+                VisbErr[kNum] = MeanErr[kNum]*energyscale[ci];
             // } else if(ci==1) {
             //     Visb[kNum] = mean*2.223/2.46;
             //     VisbErr[kNum] = MeanErr[kNum]*2.223/2.46;
@@ -216,8 +218,10 @@ void EResDiff() {
             ResErr1[kNum] = 100*func_temp->GetParError(2)/mean1;
             Mean1[kNum] = mean1;
             MeanErr1[kNum] = func_temp->GetParError(1);
-            Visb1[kNum] = mean1*1.022/Mean1[0];
-            VisbErr1[kNum] = MeanErr1[kNum]*1.022/Mean1[0];
+            // Visb1[kNum] = mean1*1.022/Mean1[0];
+            // VisbErr1[kNum] = MeanErr1[kNum]*1.022/Mean1[0];
+            Visb1[kNum] = mean1*energyscale[ci];
+            VisbErr1[kNum] = MeanErr1[kNum]*energyscale[ci];
             if(enableUpdateBin) BinNOut1<< binRange/0.2/func_temp->GetParameter(2)<<endl;
 
             h_E2->Fit("gaus","Q");
@@ -227,8 +231,10 @@ void EResDiff() {
             ResErr2[kNum] = 100*func_temp->GetParError(2)/mean2;
             Mean2[kNum] = mean2;
             MeanErr2[kNum] = func_temp->GetParError(1);
-            Visb2[kNum] = mean2*1.022/Mean2[0];
-            VisbErr2[kNum] = MeanErr2[kNum]*1.022/Mean2[0];
+            // Visb2[kNum] = mean2*1.022/Mean2[0];
+            // VisbErr2[kNum] = MeanErr2[kNum]*1.022/Mean2[0];
+            Visb2[kNum] = mean2*energyscale[ci];
+            VisbErr2[kNum] = MeanErr2[kNum]*energyscale[ci];
             if(enableUpdateBin) BinNOut2<< binRange/0.2/func_temp->GetParameter(2)<<endl;
 
             if(kNum==0) h_E3->Fit("gaus","QR", "", 0.6, 1.5);
@@ -239,8 +245,10 @@ void EResDiff() {
             ResErr3[kNum] = 100*func_temp->GetParError(2)/mean3;
             Mean3[kNum] = mean3;
             MeanErr3[kNum] = func_temp->GetParError(1);
-            Visb3[kNum] = mean3*1.022/Mean3[0];
-            VisbErr3[kNum] = MeanErr3[kNum]*1.022/Mean3[0];
+            // Visb3[kNum] = mean3*1.022/Mean3[0];
+            // VisbErr3[kNum] = MeanErr3[kNum]*1.022/Mean3[0];
+            Visb3[kNum] = mean3*energyscale[ci];
+            VisbErr3[kNum] = MeanErr3[kNum]*energyscale[ci];
             if(enableUpdateBin) BinNOut3<< binRange/0.2/func_temp->GetParameter(2)<<endl;
 
             //Visb[kNum] = TrueEnergy[kNum];

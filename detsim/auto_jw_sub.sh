@@ -14,6 +14,11 @@ if [[ ! -f ${tmpname} ]];then
     echo "$tmpname not exist!"
     exit 1
 fi
+if [[ $sim_type == "detsim" ]];then
+    memOpt="-mem 3000"
+else
+    memOpt=""
+fi
 dirnum=`cat $tmpname | wc -l`
 for((nn=1;nn<=${dirnum};))
 #for((nn=1;nn<=10;))
@@ -41,7 +46,7 @@ do
             #    echo "$dir run successfully!"
             #else
                 # no log files or success files
-            hep_sub ${jobname}"%{ProcId}".sh -n $jobnum -e /dev/null -o /dev/null
+            hep_sub ${jobname}"%{ProcId}".sh -n $jobnum -e /dev/null -o /dev/null $memOpt
             #fi
         else
             echo "$dir job number not $jobN"
@@ -49,9 +54,9 @@ do
         let "nn=nn+1"
         cd $path0
     else
-        if [[ $sim_type == detsim ]];then
-            hep_edit -m 3000 -a && hep_release -a
-        fi
+        # if [[ $sim_type == detsim ]];then
+        #     hep_edit -m 3000 -a && hep_release -a
+        # fi
         sleep 120
     fi
 done

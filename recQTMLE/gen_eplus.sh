@@ -1,8 +1,8 @@
 #!/bin/bash
 path0=`pwd`
 s=eplus
-# energies=(0 1 2 3 4 5 6 7 8 9 10)
-energies=(9 10)
+energies=(0 1 2 3 4 5 6 7 8 9 10)
+# energies=(9 10)
 
 # jnb="recAnalysis_${s}_"
 for((n=0;n<${#energies[@]};n++))

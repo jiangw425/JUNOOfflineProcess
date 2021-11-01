@@ -104,7 +104,7 @@ void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, c
     
 
     ifstream  failIDin;
-    failIDin.open("errorfileid_START.txt", ios::in);
+    failIDin.open("err/errorfileid_START.txt", ios::in);
     vector<int> vFailId;
     int idtemp = 1;
     while(failIDin>>idtemp) {

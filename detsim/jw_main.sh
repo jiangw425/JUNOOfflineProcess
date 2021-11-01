@@ -2,10 +2,10 @@
 sim_type=${1:-"detsim"}; shift
 
 # sname=(C14)
+sname=(C14 Co60 Cs137 Ge68 AmC Laser0.1 Laser0.05)
 # sname=(Co60 Cs137 Ge68 AmC Laser0.1 Laser0.05)
-# sname=(Co60 Cs137 Ge68 AmC Laser0.1 Laser0.05)
-# sname=(e+ SpaNeu)
-sname=(SpaNeu)
+# sname=(e+)
+# sname=(SpaNeu)
  
 sim_types=(detsim elecsim calib recQTMLE)
 if [[ ! ${sim_types[@]} =~ $sim_type ]];then
@@ -14,10 +14,10 @@ if [[ ! ${sim_types[@]} =~ $sim_type ]];then
 fi
 radioS=(Co60 Cs137 Ge68 AmC)
 calibS=(Co60 Cs137 Ge68 AmC Laser0.1 Laser0.05)
+
+seed_start=0
 evtPerJob=1000
 jobnum=20
-seed_start=0
-
 laserN=1
 e_energies=1
 eventRate=1
@@ -39,27 +39,39 @@ do
         jobnum=100
     elif [[ $s == "SpaNeu" ]];then
         jobnum=5000
+    elif [[ $s == "C14" ]];then
+        jobnum=50
+    else
+        jobnum=20
     fi
 
     if [[ $sim_type == "detsim" ]];then
         if [[ $s == "Laser0.05" ]];then
             laserN=11522
+			evtPerJob=1000
         elif [[ $s == "Laser0.1" ]];then
             laserN=22000
+			evtPerJob=1000
         elif [[ $s == "e+" ]];then
             evtPerJob=500
         elif [[ $s == "SpaNeu" ]];then
             evtPerJob=100
+        elif [[ $s == "C14" ]];then
+            evtPerJob=400000
+        else
+            evtPerJob=1000
         fi
     elif [[ $sim_type == "elecsim" ]];then
         evtPerJob=-1
-        if [[ ${calibS[@]} =~ $s ]];then
+        if [[ $s == "e+" ]];then
+            eventRate=100 ## shoud be 1, modify later!
+        elif [[ ${calibS[@]} =~ $s ]];then
             eventRate=100
         elif [[ $s == "SpaNeu" ]];then
             eventRate=6
         elif [[ $s == "C14" ]];then
             eventRate=40000
-            evtPerJob=10000
+            evtPerJob=20000
         fi
     elif [[ $sim_type == "calib" ]];then
         evtPerJob=-1
