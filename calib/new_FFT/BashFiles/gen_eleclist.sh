@@ -10,10 +10,12 @@ do
         continue
     fi
     echo "Finding $s elecsim path..."
-    basedir=`find $basepath -maxdepth 2 -name $s`
+    # basedir=`find $basepath -maxdepth 2 -name $s`
     if [[ ${calibS[@]} =~ $s ]];then
+        basedir=`find $basepath -maxdepth 2 -name $s`
         dir=$basedir/${s}_0_0_0/elecsim/root
     else
+        basedir=`find $basepath -maxdepth 3 -name $s`
         dir=$basedir/elecsim/root
     fi
 

@@ -58,9 +58,9 @@ void get_raw2D_NUM()
   for (int i = 0; i < entries; i++) {
     // for (int i = 0; i < 1; i++) {
     tr->GetEntry(i);
-    // if(i%100==0){
-      // cout << "Processing evt: "<<i<<", counter_n: " << counter_n << "/" << Ntotal << ", counter_h: " << counter_h << "/" <<Ntotal << endl;
-    // }
+    if(i%100==0){
+      cout << "Processing evt: "<<i<<", counter_n: " << counter_n << "/" << Ntotal << ", counter_h: " << counter_h << "/" <<Ntotal << endl;
+    }
     const JM::ElecFeeCrate& efc = ee->elecFeeCrate();
     m_crate = const_cast<JM::ElecFeeCrate*>(&efc);
     std::map<int, JM::ElecFeeChannel> feeChannels = m_crate->channelData();

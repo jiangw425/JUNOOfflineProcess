@@ -33,13 +33,14 @@ elif [[ -f "COTI_calibration.remind" ]];then
     opt=1
 fi
 
-if [[ ! ${steps[@]} =~ $1 ]];then
+input1=${1};shift
+if [[ ! ${steps[@]} =~ $input1 ]];then
     echo "Wrong step number."
     echo "Please choose from: ${steps[@]}"
     exit 3
 fi
 
-echo "`date` on `hostname`: `whoami` runs step $1." >> recorder_calibration.txt
+echo "`date` on `hostname`: `whoami` runs step $input1." >> recorder_calibration.txt
 
 path0=`pwd`
 bpath=$path0/BashFiles
@@ -51,14 +52,14 @@ mv2CheckStation(){
     mv -f $1 $path0/CheckStation/$2
 }
 
-if [[ ${1:0:1} -eq 0 ]];then
+if [[ ${input1:0:1} -eq 0 ]];then
     sname=(Ge68)
     for s in ${sname[@]};do
         filenum=`sed -n '$=' $path0/Elecsim_path/${s}_elec.list`
         tmpfilename=`head -n +1 $path0/Elecsim_path/${s}_elec.list`
         tfn=`echo ${tmpfilename%[-]*}`
         ### tfn= xxx/xx/elecsim
-        if [[ ${1:1:1} -eq 2 ]];then
+        if [[ ${input1:1:1} -eq 2 ]];then
             if [[ ! -f "$s/step01/user-root/SPE_step1.root" ]] || [[ ! -f "$s/step01/user-root/Integral.txt" ]];then
                 source $junoenv
                 cd $s/step01/user-root
@@ -67,7 +68,7 @@ if [[ ${1:0:1} -eq 0 ]];then
                 mv2CheckStation SPE_step1_fit.pdf
                 cd $path0
             fi
-        elif [[ ${1:1:1} -eq 3 ]];then
+        elif [[ ${input1:1:1} -eq 3 ]];then
             source $junoenv
             cd $s/step02/user-root
             if [[ ! -f "SPE_bck.root" ]];then
@@ -93,11 +94,11 @@ if [[ ${1:0:1} -eq 0 ]];then
                     sed -e "s#ENV#$junoenv#g" -e "s#NUM#$n#g" -e "s#PATH#`pwd`#g" $bpath/run-sample-step03.sh > ../run/filter-job-${n}.sh
                 done
                 chmod +x ../run/*.sh
-                bash $bpath/subAll.sh $path0/$s/step$1/run $1 ${s}_calib_step$1
+                bash $bpath/subAll.sh $path0/$s/step$input1/run $input1 ${s}_calib_step$input1
             fi
             continue
 
-        elif [[ ${1:1:1} -eq 4 ]];then
+        elif [[ ${input1:1:1} -eq 4 ]];then
             source $junoenv
             cd $s/step03/user-root
             if [[ ! -f "../../step02/user-root/filter.root" ]];then
@@ -119,7 +120,7 @@ if [[ ${1:0:1} -eq 0 ]];then
                 root -b -l -q "$cpath/drawamp.C"
                 mv2CheckStation amprmshn_tmp.png inteVSinteWidth.png
             fi
-            # echo "INFO: step$1 complete."
+            # echo "INFO: step$input1 complete."
             cd $path0
             # continue
         # elif [[ ${1:1:1} -eq 4 ]];then
@@ -138,24 +139,24 @@ if [[ ${1:0:1} -eq 0 ]];then
             root -b -l -q getThreshold.C
             mv2CheckStation Amp_threshold_1d.png
             cd $path0
-            echo "INFO: step$1 complete."
+            echo "INFO: step$input1 complete."
             continue
         fi
-        if [[ ${1:1:1} -le 2 ]];then
-            bash $bpath/gen_script.sh $s $1 $opt
+        if [[ ${input1:1:1} -le 2 ]];then
+            bash $bpath/gen_script.sh $s $input1 $opt
             if [[ $? -ne 0 ]];then
-                echo "Scripts generation fail at step$1."
+                echo "Scripts generation fail at step$input1."
                 exit 4
             fi
-            bash $bpath/subAll.sh $path0/$s/step$1/run $1 ${s}_calib_step$1
+            bash $bpath/subAll.sh $path0/$s/step$input1/run $input1 ${s}_calib_step$input1
         fi
     done
-elif [[ ${1: -1} -eq 1 ]] || [[ ${1: -1} -eq 2 ]] || [[ ${1: -1} -eq 3 ]]; then
-    if [[ $1 -eq 1 ]];then
-        echo "Before this step, make sure you have modified relatative parameters: Amp, width threshold and inteW"
+elif [[ ${input1: -1} -eq 1 ]] || [[ ${input1: -1} -eq 2 ]] || [[ ${input1: -1} -eq 3 ]]; then
+    if [[ $input1 -eq 1 ]];then
+        # echo "Before this step, make sure you have modified relatative parameters: Amp, width threshold and inteW"
         bash $bpath/mkdir.sh
     fi
-    if [[ $1 -lt 10 ]];then
+    if [[ $input1 -lt 10 ]];then
         sname=(AmC Ge68 Co60 Cs137 Laser0.1 Laser0.05)
     elif [[ ${scssn} == "C14" ]];then
         sname=(${scssn} Laser0.1 Laser0.05)
@@ -164,23 +165,23 @@ elif [[ ${1: -1} -eq 1 ]] || [[ ${1: -1} -eq 2 ]] || [[ ${1: -1} -eq 3 ]]; then
     fi
     for s in ${sname[@]}
     do
-        if [[ ${1: -1} -eq 2 ]];then
-            cd $s/step$(($1-1))/root
-            echo -e $(ls *.root | sed "s:^:`pwd`/: ")|tr ' ' '\n' > ../../step$1/${s}_calib.list
+        if [[ ${input1: -1} -eq 2 ]];then
+            cd $s/step$(($input1-1))/root
+            echo -e $(ls *.root | sed "s:^:`pwd`/: ")|tr ' ' '\n' > ../../step$input1/${s}_calib.list
             cd $path0 >/dev/null 2>&1
         fi
-        if [[ ${1: -1} -eq 3 ]];then
-            hep_sub 3Third_calib.sh -argu $s $1
+        if [[ ${input1: -1} -eq 3 ]];then
+            hep_sub 3Third_calib.sh -argu $s $input1
             continue
         fi
-        bash $bpath/gen_script.sh $s $1 $opt
+        bash $bpath/gen_script.sh $s $input1 $opt
         if [[ $? -ne 0 ]];then
-            echo "Scripts generation fail at step$1."
+            echo "Scripts generation fail at step$input1."
             exit 4
         fi
-        bash $bpath/subAll.sh $path0/$s/step$1/run $1 ${s}_calib_step$1
+        bash $bpath/subAll.sh $path0/$s/step$input1/run $input1 ${s}_calib_step$input1
     done
-elif [[ $1 -eq 4 ]];then
+elif [[ $input1 -eq 4 ]];then
     rm -rf 3Third_calib.sh.*
     cd Parameters
     if [[ ! -f "timeOffset_sub_roofit.txt" ]];then
@@ -198,7 +199,7 @@ elif [[ $1 -eq 4 ]];then
         cp CalibPars.txt $envpath/data/Calibration/PMTCalibSvc/data/PmtPrtData_${cname}.txt
     fi
     cd $path0
-elif [[ $1 -eq 14 ]];then
+elif [[ $input1 -eq 14 ]];then
     rm -rf 3Third_calib.sh.*
     cd Parameters
     source $junoenv

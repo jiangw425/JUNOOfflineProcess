@@ -1,5 +1,5 @@
 #include "/junofs/users/jiangw/include/myincludes.h"
-#define GE_PATH "/afs/ihep.ac.cn/users/v/valprod0/Pre-Releases/J21v1r0-Pre2/11/ACU-CLS/Ge68/"
+// #define GE_PATH "/afs/ihep.ac.cn/users/v/valprod0/Pre-Releases/J21v1r0-Pre2/11/ACU-CLS/Ge68/"
 void ckAngle_Ge68_r()
 {
 	TH1::AddDirectory(kFALSE);

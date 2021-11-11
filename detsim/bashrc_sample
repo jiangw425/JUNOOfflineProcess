@@ -1,0 +1,22 @@
+#!/bin/bash
+function junotop() {
+    echo /cvmfs/juno.ihep.ac.cn/centos7_amd64_gcc830/Pre-Release/J21v2r0-branch
+}
+function worktop() {
+    echo /tmp/lint/juno-J21v2r0-branch-testing
+}
+export JUNOTOP=$(junotop)
+export WORKTOP=$(worktop)
+export JUNO_OFFLINE_OFF=1
+export CMTCONFIG=amd64_linux26
+pushd $JUNOTOP >& /dev/null
+source setup.sh
+popd >& /dev/null
+pushd $WORKTOP
+if [ -f "offline/InstallArea/setup.sh" ]; then
+    echo 'Setup Local Offline Software (CMake version)'
+    pushd offline/InstallArea >& /dev/null
+    source setup.sh
+    popd >& /dev/null
+fi
+popd

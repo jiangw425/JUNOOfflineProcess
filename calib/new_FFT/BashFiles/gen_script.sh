@@ -21,7 +21,11 @@ if [[ $4 -eq 1 ]];then
     forceTriggerOpt="--dnstart DNSTART --dnend DNEND --enableForceTriggerInput"
   fi
 else
-  forceTriggerOpt="--dnstart DNSTART --dnend DNEND"
+  if [[ $2 -eq 12 ]];then
+    forceTriggerOpt="--dnstart DNSTART --dnend DNEND"
+  else
+    forceTriggerOpt=" "
+  fi
 fi
 listname="Elecsim_path/$1_elec.list"
 m_length=9

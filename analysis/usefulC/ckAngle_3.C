@@ -1,8 +1,9 @@
 #include "/junofs/users/jiangw/include/myincludes.h"
-void ckAngle()
+void ckAngle_3()
 {
 	TH1::AddDirectory(kFALSE);
     const int num_pmt = 17612;
+    const int num_file= 3;
     bool* hmmtpmt = pmtflag();
     // TFile *ojw = TFile::Open("tmp.root","recreate");
     // const int n = 20000; 
@@ -29,21 +30,25 @@ void ckAngle()
     // std::string path = "root://junoeos01.ihep.ac.cn//eos/juno/user/jiangw/ckAngle/10101.8_0_5832.29/user-root/user-detsim-";
     //std::string path = "/junofs/production/data-production/Pre-Releases/J20v2r0-Pre0/ACU+CLS/Laser/photon_11522/Laser_0_0_0/detsim/user-root/user-detsim-";
     //std::string path = "/junofs/production/data-production/Pre-Releases/J20v2r0-Pre0/e+/0-10MeV/10MeV/detsim/user-root/user-detsim-";
-    std::string paths[2] = {
+    std::string paths[num_file] = {
         // "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/00/e+_angle/e+_Uniform/0MeV/detsim/user-root/user-detsim-",
         // "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/11/e+_angle/e+_Uniform/0MeV/detsim/user-root/user-detsim-"
         // "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/00/ACU-CLS/Ge68/Ge68_0_0_0/detsim/user-root/user-detsim-",
         "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/11/ACU-CLS/Ge68/Ge68_0_0_0/detsim/user-root/user-detsim-",
+        "root://junoeos01.ihep.ac.cn//eos/juno/user/jiangw/J21v2r0-Pre0/Ge68_0_0_0_default/user-root/user-detsim-",
         "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU-CLS/Ge68/Ge68_0_0_0/detsim/user-root/user-detsim-",
     };
-    std::string names[4][2]={{"_","uniform"},{"off","on"},{"nnvt","hmmt"},{"z","theta"}};
-    int color[2] = {4,2};//blue, red
-    TH1F *H1D[2][2][2][2];// hist, copy | off, on |  nnvt, hmmt | z,theta
-    TH1F *diffH1D[2][2];	
-    TString hname[2][2][2][2];
+    // std::string names[4][2]={{"_","uniform"},{"off","on"},{"nnvt","hmmt"},{"z","theta"}};
+    std::string names[2][2]={{"nnvt","hmmt"},{"z","theta"}};
+    std::string c_names[num_file]={"00","11","J21v2"};
+    std::string compare_names[2]={"_","uniform"};
+    int color[num_file] = {0,4,2};//blue, red
+    TH1F *H1D[2][num_file][2][2];// hist, copy | off, on |  nnvt, hmmt | z,theta
+    TH1F *diffH1D[2][2];
+    TString hname[2][num_file][2][2];
     int range[2] = {200,100};
-    for(int i=0;i<2;++i) for(int j=0;j<2;++j) for(int k=0;k<2;++k) for(int l=0;l<2;++l){
-        hname[i][j][k][l] = Form("%s_%s_%s_%s",names[0][i].c_str(),names[1][j].c_str(),names[2][k].c_str(),names[3][l].c_str());
+    for(int i=0;i<2;++i) for(int j=0;j<num_file;++j) for(int k=0;k<2;++k) for(int l=0;l<2;++l){
+        hname[i][j][k][l] = Form("%s_%s_%s_%s",compare_names[i].c_str(),c_names[j].c_str(),names[0][k].c_str(),names[1][l].c_str());
         if(i==0){
             H1D[i][j][k][l] = new TH1F(hname[i][j][k][l],hname[i][j][k][l],range[l],0,range[l]);
             H1D[i][j][k][l]->SetLineColor(color[j]);
@@ -57,14 +62,14 @@ void ckAngle()
     // TH2F *XY[2][2];
     // TH3F *XYZ[2][2];
     int begin = 0;
-    int num = 20;
+    int num = 10;
 
     //file-begin to file-begin+num
-    for(int fn=0;fn<2;++fn){
+    for(int fn=0;fn<num_file;++fn){
         std::string path = paths[fn];
         TChain *c = new TChain("evt");
-        for(int i=begin; i<begin+num; ++i)  c->Add(Form("%s%d.root",path.c_str(),i));
-        // c->Add(Form("%s*.root",path.c_str()));
+        // for(int i=begin; i<begin+num; ++i)  c->Add(Form("%s%d.root",path.c_str(),i));
+        c->Add(Form("%s*.root",path.c_str()));
         c->SetBranchStatus("*", 0);
         c->SetBranchStatus("pmtID", 1);
         c->SetBranchStatus("LocalPosX", 1);
@@ -146,13 +151,12 @@ void ckAngle()
     delete local_y;
     delete local_z;
 
-    for(int j=0;j<2;++j) for(int k=0;k<2;++k) for(int l=0;l<2;++l){
+    for(int j=0;j<num_file;++j) for(int k=0;k<2;++k) for(int l=0;l<2;++l){
         H1D[1][j][k][l] = (TH1F*)H1D[0][j][k][l]->Clone(hname[1][j][k][l]);
         H1D[1][j][k][l]->Scale(1./H1D[1][j][k][l]->Integral());
     }
 
-    // TString cmpname[2] = {"w/o reflection", "with reflection"};
-    TString cmpname[3] = {"with reflection","J21v2"};
+    TString cmpname[2] = {"w/o reflection", "with reflection"};
 
     TCanvas *c[2];
     // TCanvas *c3 = new TCanvas("c3","c3",1920,1080);
@@ -168,10 +172,10 @@ void ckAngle()
         for(int i=0;i<2;++i) for(int k=0;k<2;++k){
             // cout << "i: " << i << "\tk:"<<k <<endl;
             tl[i][k][l] = new TList();
-            for(int j=0;j<2;++j) tl[i][k][l]->Add(H1D[i][j][k][l]);
-            compare(c[l]->cd(2*i+k+1),tl[i][k][l],2,cmpname,0);
+            for(int j=0;j<num_file;++j) tl[i][k][l]->Add(H1D[i][j][k][l]);
+            compare(c[l]->cd(2*i+k+1),tl[i][k][l],3,cmpname,0);
         }
-        c[l]->Print(Form("0MeV_%s.png",names[3][l].c_str()));
+        // c[l]->Print(Form("0MeV_%s.png",names[1][l].c_str()));
         // c[l]->Print("0MeV_angle.pdf");
     }
 
@@ -204,7 +208,7 @@ void ckAngle()
 		diffH1D[k][l]->Add(H1D[0][1][k][l],1);
 		diffH1D[k][l]->Draw("HIST");
 	}
-	c5->Print("0MeV_diff.png");
+	// c5->Print("0MeV_diff.png");
 
     // TFile *ojwz = TFile::Open("hit_z.root","recreate");
     // ojwz->cd();

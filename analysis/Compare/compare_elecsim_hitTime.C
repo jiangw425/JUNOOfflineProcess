@@ -1,32 +1,42 @@
 #include "Event/ElecHeader.h"
 #include "Event/ElecTruthHeader.h"
 #include "Context/TimeStamp.h"
-void readTruthHitTime(){
+void compare_elecsim_hitTime(){
+	const int num_file = 2;
+    const std::string sname = "SNAME";
+    std::string lable[num_file] = {"old","new"};
+    std::string path[num_file] = {
+        "OLD",
+        "NEW",
+    };
+
 	const int length = 1250;
-	string sname[4] = {"Cs137","Co60","Laser0.1","Laser0.05"};
-	TH1D *hitTime[4];
-	int lineColor[4] = {2,4,6,8};//红紫绿蓝
-	TH1D *all_hitTime_hist = new TH1D("all_hitTime_hist","all_hitTime_hist",length+100,-50,length+50);
+	int color[num_file] = {1,2};
+	TH1D *hitTime[num_file];
 
-	for(int s=0; s<4; ++s){
-		string name = sname[s] + "_hitTime";
-        hitTime[s] = new TH1D(name.c_str(),name.c_str(),length+100,-50,length+50);
-        hitTime[s]->SetLineColor(lineColor[s]);
-
+	for(int fn=0;fn<num_file;++fn){
 		TChain *tTruth = new TChain("Event/Sim/Truth/LpmtElecTruthEvent");
 		TChain *tElec = new TChain("Event/Elec/ElecEvent");
-		tElec->Add(Form("root://junoeos01.ihep.ac.cn//eos/juno/user/jiangw/J21v1r0-Pre0/ForceTrigger/%s/elecsim/root/elecsim-*.root",sname[s].c_str()));
-		tTruth->Add(Form("root://junoeos01.ihep.ac.cn//eos/juno/user/jiangw/J21v1r0-Pre0/ForceTrigger/%s/elecsim/root/elecsim-*.root",sname[s].c_str()));
+		TString spath = Form("%s/*.root",path[fn].c_str());
+		tElec->Add(spath);
+		tTruth->Add(spath);
 		JM::ElecEvent* ee = new JM::ElecEvent();
 		JM::LpmtElecTruthEvent* et = new JM::LpmtElecTruthEvent();
 		tElec->SetBranchAddress("ElecEvent", &ee);
 		tTruth->SetBranchAddress("LpmtElecTruthEvent", &et);
+		int totalEntries = tElec->GetEntries();
 		cout << "Total Elec Events: " << tElec->GetEntries() << endl;
 		cout << "Total ElecTruth Events: " << tTruth->GetEntries() << endl;
 		if (tElec->GetEntries() != tTruth->GetEntries()) cout << "Wrong input data, please check!" << endl;
 
-		for (int i = 0; i < tTruth->GetEntries()/100; i++) {
-			if(i%1000==0) cout<<"Processing "<< i << endl;
+		TString tmpname = Form("%s_%s_elecsim_hitTime",lable[fn].c_str(),sname.c_str());
+        hitTime[fn] = new TH1D(tmpname,tmpname,length+100,-50,length+50);
+        hitTime[fn]->SetLineColor(color[fn]);
+
+		int tmpentries = 2000 < totalEntries ? 2000 : totalEntries;
+		// for (int i = 0; i < tTruth->GetEntries(); i++) {
+		for (int i = 0; i < tmpentries; i++) {
+            if(i%100==0) cout << "Processing " << i << "/" << tmpentries << endl;
 			tElec->GetEntry(i);
 			tTruth->GetEntry(i);
 
@@ -44,21 +54,27 @@ void readTruthHitTime(){
 				double m_pulseHitTime = m_truths->at(j).pulseHitTime().GetNanoSec(); 
 		 		double m_waveformTime = m_pulseHitTime - m_trigTime + 100;
 				// double m_hitTime = m_truths->at(j).hitTime();
-				hitTime[s]->Fill(m_waveformTime);
-				all_hitTime_hist->Fill(m_waveformTime);
+				hitTime[fn]->Fill(m_waveformTime);
+				// all_hitTime_hist->Fill(m_waveformTime);
 			}
 		}
-
 		tTruth->~TChain();
 		tElec->~TChain();
 	}
-	TCanvas *c = new TCanvas("c","c",1920,1080);
+
+	TCanvas *cc = new TCanvas("c","c",1600,900);
+    cc->cd();
+    for(int fn=0;fn<num_file;fn++) hitTime[fn]->Draw("SAME");
+    cc->Print(Form("%s_elecsim_hitTime_diff.png",sname.c_str()));
+
+	// TCanvas *c = new TCanvas("c","c",1920,1080);
     // c->Divide(2,2);
-    all_hitTime_hist->Draw();
-    for(int s=0;s<4;++s){
-        // nPMT_hist[s]->Scale(1./nPMT_hist[s]->Integral());
-        hitTime[s]->Draw("SAME HIST");
-    }
+    // all_hitTime_hist->Draw();
+	// c->Print("tmp.png");
+    // for(int s=0;s<1;++s){
+    //     // nPMT_hist[s]->Scale(1./nPMT_hist[s]->Integral());
+    //     hitTime[s]->Draw("SAME HIST");
+    // }
 
 
 	// tElec->SetBranchAddress("ElecEvent", &ee);

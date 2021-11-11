@@ -2,21 +2,32 @@
 #include "Event/ElecTruthHeader.h"
 #include "Context/TimeStamp.h"
 void readTruthHitTime(){
+	// std::string path = "root://junoeos01.ihep.ac.cn//eos/juno/user/jiangw/J21v1r0-Pre0/ForceTrigger/Cs137/elecsim/root/elecsim-*.root";
+	// std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/C14/C14_Uniform/elecsim/root";
+	// std::string path = "/scratchfs/juno/jiangw/Production/22";
+	// std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU-CLS/Ge68/Ge68_0_0_0/elecsim/root";
+	// std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU-CLS/AmC/AmC_0_0_0/elecsim/root";
+	// std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU-CLS/Laser0.1/Laser0.1_0_0_0/elecsim/root";
+	// std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU-CLS/Laser0.05/Laser0.05_0_0_0/elecsim/root";
+	// std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU/Co60/Co60_0_0_0/elecsim/root";
+	// std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU/Cs137/Cs137_0_0_0/elecsim/root";
+	std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/11/e+/e+_Uniform/0MeV/elecsim/root";
 	const int length = 1250;
 	string sname[4] = {"Cs137","Co60","Laser0.1","Laser0.05"};
 	TH1D *hitTime[4];
 	int lineColor[4] = {2,4,6,8};//红紫绿蓝
 	TH1D *all_hitTime_hist = new TH1D("all_hitTime_hist","all_hitTime_hist",length+100,-50,length+50);
 
-	for(int s=0; s<4; ++s){
+	for(int s=0; s<1; ++s){
 		string name = sname[s] + "_hitTime";
         hitTime[s] = new TH1D(name.c_str(),name.c_str(),length+100,-50,length+50);
         hitTime[s]->SetLineColor(lineColor[s]);
 
 		TChain *tTruth = new TChain("Event/Sim/Truth/LpmtElecTruthEvent");
 		TChain *tElec = new TChain("Event/Elec/ElecEvent");
-		tElec->Add(Form("root://junoeos01.ihep.ac.cn//eos/juno/user/jiangw/J21v1r0-Pre0/ForceTrigger/%s/elecsim/root/elecsim-*.root",sname[s].c_str()));
-		tTruth->Add(Form("root://junoeos01.ihep.ac.cn//eos/juno/user/jiangw/J21v1r0-Pre0/ForceTrigger/%s/elecsim/root/elecsim-*.root",sname[s].c_str()));
+		TString spath = Form("%s/elecsim-*.root",path.c_str());
+		tElec->Add(spath);
+		tTruth->Add(spath);
 		JM::ElecEvent* ee = new JM::ElecEvent();
 		JM::LpmtElecTruthEvent* et = new JM::LpmtElecTruthEvent();
 		tElec->SetBranchAddress("ElecEvent", &ee);
@@ -25,7 +36,8 @@ void readTruthHitTime(){
 		cout << "Total ElecTruth Events: " << tTruth->GetEntries() << endl;
 		if (tElec->GetEntries() != tTruth->GetEntries()) cout << "Wrong input data, please check!" << endl;
 
-		for (int i = 0; i < tTruth->GetEntries()/100; i++) {
+		// for (int i = 0; i < tTruth->GetEntries(); i++) {
+		for (int i = 0; i < 1000; i++) {
 			if(i%1000==0) cout<<"Processing "<< i << endl;
 			tElec->GetEntry(i);
 			tTruth->GetEntry(i);
@@ -55,10 +67,11 @@ void readTruthHitTime(){
 	TCanvas *c = new TCanvas("c","c",1920,1080);
     // c->Divide(2,2);
     all_hitTime_hist->Draw();
-    for(int s=0;s<4;++s){
-        // nPMT_hist[s]->Scale(1./nPMT_hist[s]->Integral());
-        hitTime[s]->Draw("SAME HIST");
-    }
+	c->Print("tmp.png");
+    // for(int s=0;s<1;++s){
+    //     // nPMT_hist[s]->Scale(1./nPMT_hist[s]->Integral());
+    //     hitTime[s]->Draw("SAME HIST");
+    // }
 
 
 	// tElec->SetBranchAddress("ElecEvent", &ee);

@@ -1,12 +1,13 @@
 // #include "/junofs/users/jiangw/include/myincludes.h"
-void ck_nPE_Ge68_r()
+void ck_nPE_Ge68_r_3()
 {
 	TH1::AddDirectory(kFALSE);
     const int num_pmt = 17612;
     // bool* hmmtpmt = pmtflag();
     int CalibPosNum = 43;
-    std::string Ge68_path[2] = {
-        //"/afs/ihep.ac.cn/users/v/valprod0/Pre-Releases/J21v1r0-Pre2/00/ACU-CLS/Ge68/Ge68",
+    const int nc = 3;
+    std::string Ge68_path[nc] = {
+        "/afs/ihep.ac.cn/users/v/valprod0/Pre-Releases/J21v1r0-Pre2/00/ACU-CLS/Ge68/Ge68",
         "/afs/ihep.ac.cn/users/v/valprod0/Pre-Releases/J21v1r0-Pre2/11/ACU-CLS/Ge68/Ge68",
 		"/afs/ihep.ac.cn/users/v/valprod0/Pre-Releases/J21v1r0-Pre2/22/ACU-CLS/Ge68/Ge68"
     };
@@ -72,10 +73,10 @@ void ck_nPE_Ge68_r()
     // TH1D *nPE_r3= new TH1D("nPE_r3","nPE_r3",20,0,20);
     int tmp_totPE;
     float edep;
-    double totPE[3][CalibPosNum];
-    double totPEres[2][CalibPosNum];
+    double totPE[nc+1][CalibPosNum];
+    double totPEres[nc][CalibPosNum];
 
-    for(int t=0;t<2;++t) for(int i=0;i<CalibPosNum;i++) {
+    for(int t=0;t<nc;++t) for(int i=0;i<CalibPosNum;i++) {
         TString simFilePath = Form("%s_"+ StrPosX->at(i) + "_" + StrPosY->at(i) + "_" + StrPosZ->at(i) +  "/detsim/user-root/user-detsim-*", Ge68_path[t].c_str());
         TChain *tc = new TChain("evt");
         tc->Add(simFilePath);
@@ -102,14 +103,15 @@ void ck_nPE_Ge68_r()
         tc->~TChain();
     }
     for(int i=0;i<CalibPosNum;i++){
-        totPE[2][i] = totPE[1][i] - totPE[0][i];
-        cout << i << ":\t" << totPE[0][i] << "\tup:\t" << 100.*totPE[2][i]/totPE[0][i] << "\%" << endl;
+        totPE[nc][i] = totPE[2][i] - totPE[1][i];
+        cout << i << ":\t" << totPE[1][i] << "\tup:\t" << 100.*totPE[2][i]/totPE[1][i] << "\%" << endl;
     }
 
     TCanvas *c0 = new TCanvas("c0","c0",1600,900);
     TGraph *nPE_r0 = new TGraph(CalibPosNum,positionR3[1],totPE[0]);
     TGraph *nPE_r1 = new TGraph(CalibPosNum,positionR3[1],totPE[1]);
     TGraph *nPE_r2 = new TGraph(CalibPosNum,positionR3[1],totPE[2]);
+    TGraph *nPE_r3 = new TGraph(CalibPosNum,positionR3[1],totPE[3]);
     // TH1D *nPE_r0= new TH1D("nPE_r0","nPE_r0",20,0,20);
     // TH1D *nPE_r1= new TH1D("nPE_r1","nPE_r1",20,0,20);
     // for(int i=0;i<CalibPosNum;++i){
@@ -118,14 +120,17 @@ void ck_nPE_Ge68_r()
     //     nPE_r1->SetBinContent(bin+1,totPE[1][i]);
     // }
     c0->cd();
-    nPE_r1->SetLineColor(kRed);
-    nPE_r1->GetYaxis()->SetRangeUser(1100,1800);
-    nPE_r1->Draw("AC*");
+    nPE_r2->SetLineColor(kRed);
+    nPE_r1->SetLineColor(kBlue);
+    nPE_r2->GetYaxis()->SetRangeUser(1100,1800);
+    nPE_r2->Draw("AC*");
+    nPE_r1->Draw("SAME C*");
     nPE_r0->Draw("SAME C*");
 
     TCanvas *c1 = new TCanvas("c1","c1",1600,900);
     TGraph *nPE_r0res = new TGraph(CalibPosNum,positionR3[1],totPEres[0]);
     TGraph *nPE_r1res = new TGraph(CalibPosNum,positionR3[1],totPEres[1]);
+    TGraph *nPE_r2res = new TGraph(CalibPosNum,positionR3[1],totPEres[2]);
     // TH1D *nPE_r30= new TH1D("nPE_r30","nPE_r30",20,0,6000);
     // TH1D *nPE_r31= new TH1D("nPE_r31","nPE_r31",20,0,6000);
     // for(int i=0;i<CalibPosNum;++i){
@@ -134,13 +139,15 @@ void ck_nPE_Ge68_r()
     //     nPE_r31->SetBinContent(bin+1,totPE[1][i]);
     // }
     c1->cd();
-    nPE_r1res->SetLineColor(kRed);
+    nPE_r2res->SetLineColor(kRed);
+    nPE_r1res->SetLineColor(kBlue);
     // nPE_r1res->GetYaxis()->SetRangeUser(1250,1600);
-    nPE_r1res->Draw("AC*");
+    nPE_r2res->Draw("AC*");
+    nPE_r1res->Draw("SAME C*");
     nPE_r0res->Draw("SAME C*");
 
     TCanvas *c2 = new TCanvas("c2","c2",1600,900);
     c2->cd();
-    nPE_r2->GetYaxis()->SetRangeUser(0,200);
-    nPE_r2->Draw("AC*");
+    nPE_r3->GetYaxis()->SetRangeUser(0,200);
+    nPE_r3->Draw("AC*");
 }

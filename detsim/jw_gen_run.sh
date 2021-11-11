@@ -27,7 +27,8 @@ eventRate=${10}
 junoenv="/cvmfs/juno.ihep.ac.cn/centos7_amd64_gcc830/Pre-Release/J21v1r0-Pre2/setup.sh"
 localenv="/junofs/users/jiangw/J21v1r0-Pre2/bashrc"
 C14_detsim_path="/afs/ihep.ac.cn/users/v/valprod0/Pre-Releases/J21v1r0-Pre2/11/C14"
-SpaNeu_input="/junofs/production/data-production/Pre-Releases/J21v1r0-Pre0/SpallationNeutron/output_neu.root"
+SpaNeu_input="/junofs/production/data-production/Pre-Releases/J21v1r0-Pre0/output_neu.root"
+# 5 mask opts are default open from J21v2r0-Pre0
 maskOpt="--real-surface-in-cd --enable-optical-surface-in-cd --enable-strut-optical-surface --real-mask-tail --enable-mask-tail-surface"
 # maskOpt="--real-surface-in-cd --real-mask-tail"
 recMapPath="/scratchfs/juno/jiangw/give2myself/11/recMap"
@@ -141,12 +142,8 @@ do
     fi
 
     commonOut="--output root/${sim_type}-${n}.root --user-output user-root/user-${sim_type}-${n}.root"
-    if [[ $sim_type == "elecsim" ]];then
-        if [[ $sname == "C14" ]] || [[ $sname == "e+" ]];then
-            ${sim_type}_woC14_gen
-        else
-            ${sim_type}_gen
-        fi
+    if [[ $sim_type == "elecsim" ]] && [[ $sname == "C14" ]] || [[ $sname == "e+" ]];then
+        ${sim_type}_woC14_gen
     else
         ${sim_type}_gen
     fi
