@@ -22,14 +22,16 @@ input1=$1; shift
 echo "`date` on `hostname`: `whoami` runs step $input1." >> recorder_pdf.txt
 sname=(Ge68 Laser0.05)
 if [[ $input1 == 0 ]];then
+    cd cmt
     source $localenv
-    bash build.sh
+    make
+    cd $path0
 elif [[ $input1 == 1 ]];then
-    cd GenCalibPDFAlg/share
+    cd share
     bash gen.sh
     cd $path0
 elif [[ $input1 == 2 ]];then
-    cd GenCalibPDFAlg/share
+    cd share
     source /hpcfs/juno/junogpu/jiangw/miniconda3/bin/activate
     conda activate Cern
     for s in ${sname[@]}
@@ -45,7 +47,7 @@ elif [[ $input1 == 2 ]];then
     cd $path0
     echo "Now you need to copy files to local PC and process using matlab."
 elif [[ $input1 == 3 ]];then
-    cd GenCalibPDFAlg/share
+    cd share
     for s in ${sname[@]}
     do
         cd $s/GridMu_RealAdd
@@ -66,15 +68,16 @@ elif [[ $input1 == 3 ]];then
     cd timePDF
     root -b -q -l $path0/SampleFiles/pComb.C
     root -b -q -l $path0/SampleFiles/DNnPETimePdf_GL.C
-    cd $path0
 
-    cd GenQPDFAlg/share
+    cd $path0/GenQPDF/cmt
+    source $localenv
+    make
+    cd ../share
     bash gen-rec.sh
     cd $path0
-
 elif [[ $input1 == 4 ]];then
-    mkdir -p GenQPDFAlg/NPEQ
-    cd GenQPDFAlg/NPEQ
+    mkdir -p GenQPDF/NPEQ
+    cd GenQPDF/NPEQ
     source $localenv
     root -l -b -q $path0/SampleFiles/AvgNPEQpdf.C
     cd $path0
@@ -82,10 +85,10 @@ elif [[ $input1 == 4 ]];then
     mkdir -p recMap
     cd recMap
     mkdir -p CalibPMTPara ChargeSpec TimePdf nPEMap
-    cp ../GenCalibPDFAlg/share/Ge68/GridMu_RealAdd/LnPEMapFile.root nPEMap
-    cp ../GenCalibPDFAlg/share/Laser0.05/GridMu_RealAdd/LnPEMapFile_Ek.root nPEMap
-    cp ../GenCalibPDFAlg/share/timePDF/TimePdfFile.root TimePdf
-    cp ../GenQPDFAlg/NPEQ/AvgNPEQpdf.root ChargeSpec
+    cp ../share/Ge68/GridMu_RealAdd/LnPEMapFile.root nPEMap
+    cp ../share/Laser0.05/GridMu_RealAdd/LnPEMapFile_Ek.root nPEMap
+    cp ../share/timePDF/TimePdfFile.root TimePdf
+    cp ../GenQPDF/NPEQ/AvgNPEQpdf.root ChargeSpec
     ### CalibPMTPara not used in OMILREC or other alg
     cd $path0
 fi

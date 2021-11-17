@@ -44,8 +44,8 @@ elecsim_gen(){
 }
 elecsim_woC14_gen(){
     if [[ $sname == "C14" ]];then
-        NHITSTHRESHOLD=100
-        TRIGGER_FIREDPMTNUM=30
+        NHITSTHRESHOLD=30
+        TRIGGER_FIREDPMTNUM=100
     else
         NHITSTHRESHOLD=500
         TRIGGER_FIREDPMTNUM=200
@@ -142,7 +142,7 @@ do
     fi
 
     commonOut="--output root/${sim_type}-${n}.root --user-output user-root/user-${sim_type}-${n}.root"
-    if [[ $sim_type == "elecsim" ]] && [[ $sname == "C14" ]] || [[ $sname == "e+" ]];then
+    if [[ $sname == "e+" ]] || [[ $sname == "C14" ]] && [[ $sim_type == "elecsim" ]];then
         ${sim_type}_woC14_gen
     else
         ${sim_type}_gen

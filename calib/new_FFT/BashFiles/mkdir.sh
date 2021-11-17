@@ -5,7 +5,7 @@ do
     if [[ ${i:0:1} -eq 0 ]];then
         sname=(Ge68)
     elif [[ $i -lt 10 ]];then
-        sname=(C14 AmC Ge68 Co60 Cs137 Laser0.1 Laser0.05)
+        sname=(AmC Ge68 Co60 Cs137 Laser0.1 Laser0.05)
     else
         sname=(C14 Laser0.1 Laser0.05)
     fi

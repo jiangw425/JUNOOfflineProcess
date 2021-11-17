@@ -2,8 +2,8 @@
 sim_type=${1:-"detsim"}; shift
 
 # sname=(C14)
-sname=(C14 Co60 Cs137 Ge68 AmC Laser0.1 Laser0.05)
-# sname=(Co60 Cs137 Ge68 AmC Laser0.1 Laser0.05)
+sname=(Laser0.05 Ge68 Laser0.1 Co60 Cs137 AmC)
+# sname=(AmC Laser0.05 Ge68 Laser0.1 Co60 Cs137)
 # sname=(e+)
 # sname=(SpaNeu)
  

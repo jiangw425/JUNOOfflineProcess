@@ -23,7 +23,7 @@ dirnum=`cat $tmpname | wc -l`
 for((nn=1;nn<=${dirnum};))
 #for((nn=1;nn<=10;))
 do
-    echo "`date` submiting lines: $nn"
+    # echo "`date` submiting lines: $nn"
     # echo "`date`, are going to run $dir on `hostname`"
     hepnum=`hep_q -u | tail -n 1 | cut -d' ' -f1`
     if [[ $hepnum -lt 9000 ]];then
@@ -32,6 +32,7 @@ do
         for((tn=0;tn<${subnum};tn++))
         do
             tl=$((nn+tn))
+            echo "`date` submiting lines: $tl"
             dir=`head -n $tl $tmpname | tail -n 1`
             cd $dir
             jobnum=`ls *.sh | wc -l`

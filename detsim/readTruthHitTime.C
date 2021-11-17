@@ -3,15 +3,15 @@
 #include "Context/TimeStamp.h"
 void readTruthHitTime(){
 	// std::string path = "root://junoeos01.ihep.ac.cn//eos/juno/user/jiangw/J21v1r0-Pre0/ForceTrigger/Cs137/elecsim/root/elecsim-*.root";
-	// std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/C14/C14_Uniform/elecsim/root";
-	// std::string path = "/scratchfs/juno/jiangw/Production/22";
+	std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/11/C14/C14_Uniform/elecsim/root";
+	// std::string path = "/scratchfs/juno/jiangw/Production/11";
 	// std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU-CLS/Ge68/Ge68_0_0_0/elecsim/root";
 	// std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU-CLS/AmC/AmC_0_0_0/elecsim/root";
 	// std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU-CLS/Laser0.1/Laser0.1_0_0_0/elecsim/root";
 	// std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU-CLS/Laser0.05/Laser0.05_0_0_0/elecsim/root";
 	// std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU/Co60/Co60_0_0_0/elecsim/root";
 	// std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU/Cs137/Cs137_0_0_0/elecsim/root";
-	std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/11/e+/e+_Uniform/0MeV/elecsim/root";
+	// std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/11/e+/e+_Uniform/0MeV/elecsim/root";
 	const int length = 1250;
 	string sname[4] = {"Cs137","Co60","Laser0.1","Laser0.05"};
 	TH1D *hitTime[4];
@@ -25,7 +25,8 @@ void readTruthHitTime(){
 
 		TChain *tTruth = new TChain("Event/Sim/Truth/LpmtElecTruthEvent");
 		TChain *tElec = new TChain("Event/Elec/ElecEvent");
-		TString spath = Form("%s/elecsim-*.root",path.c_str());
+		//TString spath = Form("%s/elecsim-*.root",path.c_str());
+		TString spath = Form("%s/elecsim-0.root",path.c_str());
 		tElec->Add(spath);
 		tTruth->Add(spath);
 		JM::ElecEvent* ee = new JM::ElecEvent();
@@ -56,7 +57,7 @@ void readTruthHitTime(){
 				double m_pulseHitTime = m_truths->at(j).pulseHitTime().GetNanoSec(); 
 		 		double m_waveformTime = m_pulseHitTime - m_trigTime + 100;
 				// double m_hitTime = m_truths->at(j).hitTime();
-				hitTime[s]->Fill(m_waveformTime);
+				// hitTime[s]->Fill(m_waveformTime);
 				all_hitTime_hist->Fill(m_waveformTime);
 			}
 		}
@@ -64,7 +65,7 @@ void readTruthHitTime(){
 		tTruth->~TChain();
 		tElec->~TChain();
 	}
-	TCanvas *c = new TCanvas("c","c",1920,1080);
+	TCanvas *c = new TCanvas("c","c",1600,900);
     // c->Divide(2,2);
     all_hitTime_hist->Draw();
 	c->Print("tmp.png");
