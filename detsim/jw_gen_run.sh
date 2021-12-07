@@ -59,7 +59,7 @@ calib_gen(){
 }
 recQTMLE_gen(){
     Opt_ERec="--method energy-point --enableQTimePdf --enableUseEkMap --enableLTSPEs --enableTimeInfo"
-    echo "source ${junoenv}" >> ${name}
+    echo "source ${localenv}" >> ${name}
     echo "(time python \${TUTORIALROOT}/share/tut_calib2rec.py --evtmax ${evtPerJob} --gdml ${Opt_ERec} --RecMapPath ${recMapPath} --input ../calib/root/calib-${n}.root ${commonOut} --elec yes) >& log/log-${sim_type}-${n}.txt" >> ${name}
     echo "rm -f root/${sim_type}-${n}.root" >> ${name}
 }

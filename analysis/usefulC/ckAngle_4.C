@@ -1,9 +1,9 @@
 #include "/junofs/users/jiangw/include/myincludes.h"
-void ckAngle_3()
+void ckAngle_4()
 {
 	TH1::AddDirectory(kFALSE);
     const int num_pmt = 17612;
-    const int num_file= 3;
+    const int num_file= 4;
     bool* hmmtpmt = pmtflag();
     // TFile *ojw = TFile::Open("tmp.root","recreate");
     // const int n = 20000; 
@@ -31,6 +31,7 @@ void ckAngle_3()
     //std::string path = "/junofs/production/data-production/Pre-Releases/J20v2r0-Pre0/ACU+CLS/Laser/photon_11522/Laser_0_0_0/detsim/user-root/user-detsim-";
     //std::string path = "/junofs/production/data-production/Pre-Releases/J20v2r0-Pre0/e+/0-10MeV/10MeV/detsim/user-root/user-detsim-";
     std::string paths[num_file] = {
+        "/scratchfs/juno/jiangw/Production/J21v1r0-Pre0/Ge68_0_0_0/detsim/user-root/user-detsim-",
         // "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/00/e+_angle/e+_Uniform/0MeV/detsim/user-root/user-detsim-",
         // "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/11/e+_angle/e+_Uniform/0MeV/detsim/user-root/user-detsim-"
         "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/00/ACU-CLS/Ge68/Ge68_0_0_0/detsim/user-root/user-detsim-",
@@ -40,9 +41,9 @@ void ckAngle_3()
     };
     // std::string names[4][2]={{"_","uniform"},{"off","on"},{"nnvt","hmmt"},{"z","theta"}};
     std::string names[2][2]={{"nnvt","hmmt"},{"z","theta"}};
-    std::string c_names[num_file]={"00","11","J21v2"};
+    std::string c_names[num_file]={"J21v1","00","11","J21v2"};
     std::string compare_names[2]={"_","uniform"};
-    int color[num_file] = {1,4,2};//black, blue, red
+    int color[num_file] = {3,1,4,2};//black, blue, red
     TH1F *H1D[2][num_file][2][2];// hist, copy | off, on |  nnvt, hmmt | z,theta
     TH1F *diffH1D[2][2];
     TString hname[2][num_file][2][2];
@@ -61,8 +62,8 @@ void ckAngle_3()
     }
     // TH2F *XY[2][2];
     // TH3F *XYZ[2][2];
-    int begin = 0;
-    int num = 10;
+    // int begin = 0;
+    // int num = 10;
 
     //file-begin to file-begin+num
     for(int fn=0;fn<num_file;++fn){
@@ -156,7 +157,7 @@ void ckAngle_3()
         H1D[1][j][k][l]->Scale(1./H1D[1][j][k][l]->Integral());
     }
 
-    TString cmpname[2] = {"w/o reflection", "with reflection"};
+    TString cmpname[num_file] = {"J21v1", "00", "11", "J21v2"};
 
     TCanvas *c[2];
     // TCanvas *c3 = new TCanvas("c3","c3",1920,1080);
@@ -173,7 +174,7 @@ void ckAngle_3()
             // cout << "i: " << i << "\tk:"<<k <<endl;
             tl[i][k][l] = new TList();
             for(int j=0;j<num_file;++j) tl[i][k][l]->Add(H1D[i][j][k][l]);
-            compare(c[l]->cd(2*i+k+1),tl[i][k][l],3,cmpname,0);
+            compare(c[l]->cd(2*i+k+1),tl[i][k][l],num_file,cmpname,0);
         }
         // c[l]->Print(Form("0MeV_%s.png",names[1][l].c_str()));
         // c[l]->Print("0MeV_angle.pdf");
@@ -220,6 +221,6 @@ void ckAngle_3()
     // for(int i=0;i<num_pmt;++i) hit_pos[1][i]->Write();
     // ojwa->Close();
 	TFile *ojw = TFile::Open("hit_zt.root","recreate");
-	for(int j=0;j<3;++j) for(int k=0;k<2;k++) for(int l=0;l<2;l++) H1D[1][j][k][l]->Write();
+	for(int j=0;j<num_file;++j) for(int k=0;k<2;k++) for(int l=0;l<2;l++) H1D[1][j][k][l]->Write();
 	ojw->Close();
 }

@@ -18,8 +18,8 @@ calibS=(Co60 Cs137 Ge68 AmC Laser0.1 Laser0.05)
 seed_start=0
 evtPerJob=1000
 jobnum=20
-laserN=1
-e_energies=1
+laserN=10000
+e_energies=0.1
 eventRate=1
 
 for s in ${sname[@]}

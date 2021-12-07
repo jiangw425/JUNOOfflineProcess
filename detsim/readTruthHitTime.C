@@ -3,7 +3,7 @@
 #include "Context/TimeStamp.h"
 void readTruthHitTime(){
 	// std::string path = "root://junoeos01.ihep.ac.cn//eos/juno/user/jiangw/J21v1r0-Pre0/ForceTrigger/Cs137/elecsim/root/elecsim-*.root";
-	std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/11/C14/C14_Uniform/elecsim/root";
+	// std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/11/C14/C14_Uniform/elecsim/root";
 	// std::string path = "/scratchfs/juno/jiangw/Production/11";
 	// std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU-CLS/Ge68/Ge68_0_0_0/elecsim/root";
 	// std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU-CLS/AmC/AmC_0_0_0/elecsim/root";
@@ -12,6 +12,7 @@ void readTruthHitTime(){
 	// std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU/Co60/Co60_0_0_0/elecsim/root";
 	// std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU/Cs137/Cs137_0_0_0/elecsim/root";
 	// std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/11/e+/e+_Uniform/0MeV/elecsim/root";
+	std::string path = "root://junoeos01.ihep.ac.cn//eos/juno/valprod/valprod0/J21v1r0-Pre0/C14/elecsim/root";
 	const int length = 1250;
 	string sname[4] = {"Cs137","Co60","Laser0.1","Laser0.05"};
 	TH1D *hitTime[4];

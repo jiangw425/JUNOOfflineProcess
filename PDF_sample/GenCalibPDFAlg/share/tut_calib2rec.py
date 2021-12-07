@@ -80,7 +80,7 @@ PMTCalibSvc = task.createSvc("PMTCalibSvc")
 # == Then use OMILREC to rec. the energy
 #Sniper.loadDll("/afs/ihep.ac.cn/users/l/luoxj/scratchfs_juno_500G/GenCalibPDFVertexAndEnergy/J20v2r0-Pre2_phy_zxt_decon/amd64_linux26/libGenCalibPDF.so")
 #Sniper.loadDll("../../amd64_linux26/libGenCalibPDF.so")
-Sniper.loadDll("../../InstallArea/lib64/libGenCalibPDFAlg.so")
+Sniper.loadDll("../../../InstallArea/lib64/libGenCalibPDFAlg.so")
 #import OMILREC
 alg = task.createAlg("GenCalibPDF")
 

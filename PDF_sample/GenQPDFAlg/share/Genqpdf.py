@@ -46,9 +46,10 @@ import PMTCalibSvc
 PMTCalibSvc = task.createSvc("PMTCalibSvc")
 
 import os
-Sniper.loadDll("../amd64_linux26/libGenQPDF.so")
+# Sniper.loadDll("../amd64_linux26/libGenQPDF.so")
 #Sniper.loadDll("/afs/ihep.ac.cn/users/l/luoxj/scratchfs_juno_500G/GenCalibPDFVertexAndEnergy/J21v1r0-Pre0/GenQPDF_v2/amd64_linux26/libGenQPDF.so")
 #Sniper.loadDll("/junofs/users/huanggh/EnergyRec/GhRec/GenQPDF_batch/amd64_linux26/libGenQPDF.so")
+Sniper.loadDll("../../InstallArea/lib64/libGenQPDFAlg.so")
 alg = task.createAlg("GenQPDF")
 alg.property("jobA").set(args.JOBA)
 alg.property("jobB").set(args.JOBB)

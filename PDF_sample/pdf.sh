@@ -2,6 +2,10 @@
 path0=`pwd`
 steps=(0 1 2 3 4)
 localenv=LOCALENV
+if [[ $# -ne 1 ]];then
+    echo "Input choose from: ${steps[@]}"
+    exit 1
+fi
 if [[ ! ${steps[@]} =~ $1 ]];then
     echo "Wrong step number."
     echo "Please choose from: ${steps[@]}"

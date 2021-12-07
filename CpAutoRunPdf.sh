@@ -20,7 +20,7 @@ copyPath=/junofs/users/jiangw/GitCode/JUNOOfflineProcess/PDF_sample
 
 cd GenCalibPDFAlg/share
 sed -e "s#MYTOP#${envpath}#g" -e "s#ACUCLSPATH#${acuclspath}#g" -e "s#FILENUM#${filenum}#g" ${copyPath}/GenCalibPDFAlg/share/gen.sh > gen.sh
-cd ..
+cd ../..
 
 cd GenQPDFAlg/share
 sed "s#MYTOP#${envpath}#g" ${copyPath}/GenQPDFAlg/share/gen-rec.sh > gen-rec.sh

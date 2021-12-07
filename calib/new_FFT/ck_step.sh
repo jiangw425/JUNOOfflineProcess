@@ -77,7 +77,7 @@ case $1 in
         cd - >/dev/null 2>&1
     ;;
     9)
-        checkExist timeOffset_roofit.txt timeOffset_sub_roofit.txt Parameters/timeOffset_sub_roofit.txt
+        checkExist TimeOffset/timeOffset_roofit.txt TimeOffset/timeOffset_sub_roofit.txt Parameters/timeOffset_sub_roofit.txt
     ;;
     # 03)
     #     checkExist CheckStation/SPE.png CheckStation/filter.png CheckStation/inteVSinteWidth.png

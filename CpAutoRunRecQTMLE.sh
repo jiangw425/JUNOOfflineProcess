@@ -1,15 +1,12 @@
 #!/bin/bash
 junoenv=/cvmfs/juno.ihep.ac.cn/centos7_amd64_gcc830/Pre-Release/J21v1r0-Pre2/setup.sh
-yourenv=/junofs/users/jiangw/J21v1r0-Pre2/bashrc
 datapath=/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/11
 filenum=20
 efilenum=100
 ### --- Please modify the variables above. --- ###
 ###  junoenv: official juno offline env setup  ###
-###  yourenv: your relative copied from trunk  ###
 ###  elecpath: path includes the elecsim files ###
 
-envpath=`echo ${yourenv%/*}`
 copyPath=/junofs/users/jiangw/GitCode/JUNOOfflineProcess/recQTMLE
 
 rsync -av $copyPath/* .
