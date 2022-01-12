@@ -1,12 +1,11 @@
 #!/bin/bash
-sim_type=${1:-"detsim"}; shift
+sim_type=${1:-"recQTMLE"}; shift
 
 # sname=(C14)
 # sname=(Laser0.05 Ge68 Laser0.1 Co60 Cs137 AmC)
 # sname=(AmC Laser0.05 Ge68 Laser0.1 Co60 Cs137)
-# sname=(e- e+)
+sname=(Ge68 e+)
 # sname=(SpaNeu)
-sname=(gamma)
  
 sim_types=(detsim elecsim calib recQTMLE)
 if [[ ! ${sim_types[@]} =~ $sim_type ]];then
@@ -19,29 +18,25 @@ calibS=(Co60 Cs137 Ge68 AmC Laser0.1 Laser0.05)
 seed_start=0
 evtPerJob=1000
 jobnum=20
-laserN=10000
+laserN=1
 e_energies=0.1
 eventRate=1
 
-rm -f ${sim_type}_subdirs.txt
 for s in ${sname[@]}
 do
     echo $s
-    if [[ $s == "Co60" ]] || [[ $s == "Cs137" ]];then
-        path1="ACU"
-    elif [[ $s == "Ge68" ]] || [[ $s == "AmC" ]] || [[ ${s:0:5} == "Laser" ]];then
-        path1="ACU-CLS"
-    else
+    # if [[ $s == "Co60" ]] || [[ $s == "Cs137" ]];then
+    #     path1="ACU"
+    # elif [[ $s == "Ge68" ]] || [[ $s == "AmC" ]] || [[ ${s:0:5} == "Laser" ]];then
+    #     path1="ACU-CLS"
+    # else
         path1="."
-    fi
+    # fi
 
     if [[ $s == "e+" ]];then
         # e_energies=0_1_2_3_4_5_6_7_8_9_10_0~10
-        e_energies=0_1_2_3_4_5_6_7_8_9_10
-        jobnum=100
-    elif [[ $s == "e-" ]] || [[ $s == "gamma" ]];then
-        ### No 0MeV Ek
-        e_energies=1_2_3_4_5_6_7_8_9_10
+        # e_energies=0_1_2_3_4_5_6_7_8_9_10
+        e_energies=0_2_3_4_5_8
         jobnum=100
     elif [[ $s == "SpaNeu" ]];then
         jobnum=5000
@@ -58,7 +53,7 @@ do
         elif [[ $s == "Laser0.1" ]];then
             laserN=22000
 			evtPerJob=1000
-        elif [[ $s == "e+" ]] || [[ $s == "e-" ]] || [[ $s == "gamma" ]];then
+        elif [[ $s == "e+" ]];then
             evtPerJob=500
         elif [[ $s == "SpaNeu" ]];then
             evtPerJob=100
@@ -69,8 +64,8 @@ do
         fi
     elif [[ $sim_type == "elecsim" ]];then
         evtPerJob=-1
-        if [[ $s == "e+" ]] || [[ $s == "e-" ]] || [[ $s == "gamma" ]];then
-            eventRate=1
+        if [[ $s == "e+" ]];then
+            eventRate=1 ## shoud be 1, modify later!
         elif [[ ${calibS[@]} =~ $s ]];then
             eventRate=100
         elif [[ $s == "SpaNeu" ]];then
@@ -86,18 +81,17 @@ do
     fi
 
     pos_xyz=()
-    if [[ $s == "e+" ]] || [[ $s == "e-" ]] || [[ $s == "gamma" ]];then
-        # pos_xyz[0]="Uniform"
+    if [[ $s == "e+" ]];then
+        pos_xyz[0]="Uniform"
+    elif [[ $s == "Ge68" ]];then
         pos_xyz[0]="0_0_0"
-    elif [[ $s == "Laser0.1" ]];then
-        pos_xyz[0]="0_0_0"
-    elif [[ ${radioS[@]} =~ $s ]] || [[ $s == "Laser0.05" ]];then
-        posnum_counter=0
-        while read lines
-        do
-            pos_xyz[${posnum_counter}]=`echo $lines | tr ' ' _`
-            let ++posnum_counter
-        done < pos/${path1}_XYZPos.txt
+    # elif [[ ${radioS[@]} =~ $s ]] || [[ $s == "Laser0.05" ]];then
+    #     posnum_counter=0
+    #     while read lines
+    #     do
+    #         pos_xyz[${posnum_counter}]=`echo $lines | tr ' ' _`
+    #         let ++posnum_counter
+    #     done < pos/${path1}_XYZPos.txt
     else
         pos_xyz[0]="Uniform"
     fi
@@ -105,7 +99,7 @@ do
     echo ${#pos_xyz[@]}
     for x_y_z in ${pos_xyz[@]}
     do
-        echo "$s $x_y_z $e_energies"
+        echo "$s $x_y_z"
         n_energy=`echo $e_energies | grep -o _ | wc -l`
         for((ne=0;ne<=$n_energy;ne++))
         do

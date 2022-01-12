@@ -23,39 +23,15 @@ dirnum=`cat $tmpname | wc -l`
 for((nn=1;nn<=${dirnum};))
 #for((nn=1;nn<=10;))
 do
-    # echo "`date` submiting lines: $nn"
+    echo "`date` processing lines: $nn"
     # echo "`date`, are going to run $dir on `hostname`"
-    hepnum=`hep_q -u | tail -n 1 | cut -d' ' -f1`
-    if [[ $hepnum -lt 9000 ]];then
-        leftnum=$((9000-$hepnum))
-        subnum=$(($leftnum/$jonN+1))
-        for((tn=0;tn<${subnum};tn++))
-        do
-            tl=$((nn+tn))
-            echo "`date` submiting lines: $tl"
-            dir=`head -n $tl $tmpname | tail -n 1`
-            cd $dir
-            jobnum=`ls *.sh | wc -l`
-            if [[ $jobnum -eq $jobN ]];then
-                job0=`find -name "*_0.sh"`
-                jobname=`echo ${job0%[0]*}`
-                hep_sub ${jobname}"%{ProcId}".sh -n $jobnum -e /dev/null -o /dev/null $memOpt
-            else
-                echo "$dir job number not $jobN"
-            fi
-        done
-        let "nn=nn+subnum"
-    else
-        sleep 120
-    fi
-    cd $path0
     # if [[ `hep_q -u | tail -n 1 | cut -d' ' -f1` -lt 9000 ]];then
-    #     dir=`head -n $nn $tmpname | tail -n 1`
-    #     cd $dir
-    #     jobnum=`ls *.sh | wc -l`
-    #     if [[ $jobnum -eq $jobN ]];then
-    #         job0=`find -name "*_0.sh"`
-    #         jobname=`echo ${job0%[0]*}`
+        dir=`head -n $nn $tmpname | tail -n 1`
+        cd $dir
+        jobnum=`ls *.sh | wc -l`
+        if [[ $jobnum -eq $jobN ]];then
+            job0=`find -name "*_0.sh"`
+            jobname=`echo ${job0%[0]*}`
             #sckout=`bash ~jiangw/sck.sh ../log | head -n 1 | cut -d' ' -f2`
             #if [[ $sckout == "40" ]];then
                 #for n in {0..39}
@@ -70,14 +46,17 @@ do
             #    echo "$dir run successfully!"
             #else
                 # no log files or success files
-            # hep_sub ${jobname}"%{ProcId}".sh -n $jobnum -e /dev/null -o /dev/null $memOpt
+            hep_sub ${jobname}"%{ProcId}".sh -n $jobnum -e /dev/null -o /dev/null $memOpt
             #fi
-        # else
-        #     echo "$dir job number not $jobN"
-        # fi
-        # let "nn=nn+1"
-        # cd $path0
+        else
+            echo "$dir job number not $jobN"
+        fi
+        let "nn=nn+1"
+        cd $path0
+    # else
         # if [[ $sim_type == detsim ]];then
         #     hep_edit -m 3000 -a && hep_release -a
         # fi
+        # sleep 120
+    # fi
 done

@@ -22,7 +22,7 @@ source setup.sh
 source cleanup.sh
 cmt br cmt make
 
-##### From J21v2r0-Pre0, cmt -> cmake ####
+##### From J21v2r0-Pre0 on, cmt -> cmake ####
 svn co https://juno.ihep.ac.cn/svn/offline/tags/J21v2r0-Pre0 offline
 
 cp /junofs/users/jiangw/GitCode/JUNOOfflineProcess/detsim/bashrc_sample bashrc

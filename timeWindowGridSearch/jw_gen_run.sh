@@ -26,13 +26,12 @@ eventRate=${10}
 
 junoenv="/cvmfs/juno.ihep.ac.cn/centos7_amd64_gcc830/Pre-Release/J21v2r0-Pre0/setup.sh"
 localenv="/junofs/users/jiangw/22/bashrc"
-C14_detsim_path="/afs/ihep.ac.cn/users/v/valprod0/Pre-Releases/J21v1r0-Pre2/22/C14"
+C14_detsim_path="/afs/ihep.ac.cn/users/v/valprod0/Pre-Releases/J21v1r0-Pre2/11/C14"
 SpaNeu_input="/junofs/production/data-production/Pre-Releases/J21v1r0-Pre0/output_neu.root"
 # 5 mask opts are default open from J21v2r0-Pre0
 # maskOpt="--real-surface-in-cd --enable-optical-surface-in-cd --enable-strut-optical-surface --real-mask-tail --enable-mask-tail-surface"
-# maskOpt="--real-surface-in-cd --real-mask-tail"
-maskOpt="--enable-pmt-optical-model"
-recMapPath="/scratchfs/juno/jiangw/Time_Grid/420/recMap"
+maskOpt=" "
+recMapPath="/scratchfs/juno/jiangw/Time_Grid/SIGNALWINDOW/recMap"
 
 detsim_gen(){
     echo "source ${junoenv}" >> ${name}
@@ -48,25 +47,32 @@ elecsim_woC14_gen(){
         NHITSTHRESHOLD=30
         TRIGGER_FIREDPMTNUM=100
     else
-        NHITSTHRESHOLD=500
+        NHITSTHRESHOLD=200
         TRIGGER_FIREDPMTNUM=200
     fi
     echo "source ${junoenv}" >> ${name}
-    echo "(time python \$TUTORIALROOT/share/tut_det2elec.py --evtmax ${evtPerJob} --seed ${seed} --loglevel Fatal --input ../detsim/root/detsim-${n}.root ${splitOpt} ${commonOut} --rate ${eventRate} --nHitsThreshold ${NHITSTHRESHOLD} --Trigger_FiredPmtNum ${TRIGGER_FIREDPMTNUM}) >& log/log-${sim_type}-${n}.txt" >> ${name}
+    echo "(time python \$TUTORIALROOT/share/tut_det2elec.py --evtmax ${evtPerJob} --seed ${seed} --loglevel Fatal --input /afs/ihep.ac.cn/users/v/valprod0/Pre-Releases/J21v1r0-Pre0/${sname}/${sname}_${pos_xyz}/${e_energy}MeV/detsim/root/detsim-${n}.root ${splitOpt} ${commonOut} --rate ${eventRate} --nHitsThreshold ${NHITSTHRESHOLD} --Trigger_FiredPmtNum ${TRIGGER_FIREDPMTNUM}) >& log/log-${sim_type}-${n}.txt" >> ${name}
 }
 calib_gen(){
-    echo "source ${localenv}" >> ${name}
-    echo "(time python \$TUTORIALROOT/share/tut_elec2calib.py --evtmax ${evtPerJob} --enableElecTruth --input ../elecsim/root/elecsim-${n}.root ${commonOut}) >& log/log-${sim_type}-${n}.txt" >> ${name}
+    echo "source ${junoenv}" >> ${name}
+#	echo "source /junofs/users/jiangw/J21v1r0-Pre0/offline/Calibration/PMTCalibSvc/cmt/setup.sh" >> ${name}
+#    echo "(time python \$TUTORIALROOT/share/tut_elec2calib.py --evtmax ${evtPerJob} --enableElecTruth --input ../elecsim/root/elecsim-${n}.root ${commonOut}) >& log/log-${sim_type}-${n}.txt" >> ${name}
+	echo "export WORKTOP=/junofs/users/jiangw/J21v1r0-Pre0" >> ${name}
+	echo "(time python \$TUTORIALROOT/share/tut_elec2calib.py --evtmax ${evtPerJob} --enableElecTruth --CalibFile /junofs/users/jiangw/give2lxj/J21v1r0-Pre0/SPE.root --Filter /junofs/users/jiangw/give2lxj/J21v1r0-Pre0/filter.root --input root://junoeos01.ihep.ac.cn//eos/juno/valprod/valprod0/review/${e_energy}MeV/elecsim/root/elecsim-${n}.root ${commonOut}) >& log/log-${sim_type}-${n}.txt" >> ${name}
 }
 recQTMLE_gen(){
     Opt_ERec="--method energy-point --enableQTimePdf --enableUseEkMap --enableLTSPEs --enableTimeInfo"
+    if [[ $sname == "e+" ]];then
+        inputroot="/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/e+/e+_Uniform/${e_energy}MeV/calib/root/calib-${n}.root"
+    elif [[ $sname == "Ge68" ]];then
+        inputroot="/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU-CLS/Ge68/Ge68_0_0_0/calib/root/calib-${n}.root"
+    fi
     echo "source ${localenv}" >> ${name}
-    echo "(time python \${TUTORIALROOT}/share/tut_calib2rec.py --evtmax ${evtPerJob} --gdml ${Opt_ERec} --RecMapPath ${recMapPath} --input ../calib/root/calib-${n}.root ${commonOut} --elec yes) >& log/log-${sim_type}-${n}.txt" >> ${name}
-    echo "rm -f root/${sim_type}-${n}.root" >> ${name}
+    echo "(time python \${TUTORIALROOT}/share/tut_calib2rec.py --evtmax ${evtPerJob} --gdml ${Opt_ERec} --RecMapPath ${recMapPath} --input ${inputroot} ${commonOut} --SignalWindowL SIGNALWINDOW --elec yes) >& log/log-${sim_type}-${n}.txt" >> ${name}
+#    echo "rm -f root/${sim_type}-${n}.root" >> ${name}
 }
 
-if [[ $sname == "e+" ]] || [[ $sname == "e-" ]] || [[ $sname == "gamma" ]];then
-    echo "Generating ${e_energy}MeV"
+if [[ $sname == "e+" ]];then
     if [[ `echo $e_energy | grep -o \~ | wc -l` -eq 1 ]];then
         is_energy_range=1
         e_min=`echo $e_energy | cut -d~ -f1`
@@ -83,11 +89,10 @@ if [[ ! -d $dir ]];then
     mkdir -p $dir/user-root
     mkdir -p $dir/root
     mkdir -p $dir/log
+    echo "$dir/run" >> $path0/${sim_type}_subdirs.txt
 fi
-echo "$dir/run" >> $path0/${sim_type}_subdirs.txt
 cd $dir
 rm -rf run/*${sim_type}*.sh*
-rm -rf log/*${sim_type}*.txt
 
 for((n=0;n<$jobnum;n++))
 do
@@ -95,20 +100,18 @@ do
         echo "Generating... $sname $sim_type ($n/$jobnum)"
     fi
 
-    if [[ $sname == "e+" ]] || [[ $sname == "e-" ]] || [[ $sname == "gamma" ]];then
-        name=run/${sname}_${e_energy}MeV_${sim_type}_${n}.sh
+    if [[ $sname == "e+" ]];then
+        name=run/SIGNALWINDOW_${sname}_${e_energy}MeV_${sim_type}_${n}.sh
     else
         name=run/${sname}_${pos_xyz}_${sim_type}_${n}.sh
     fi
     seed=$(($seed_start+$n))
     echo "#!/bin/bash" > $name
+	echo "export XRD_STREAMTIMEOUT=600" >> $name
     echo "cd ${path0}/${dir}" >> $name
     # echo "\$JUNOTESTROOT/production/libs/jobmom.sh \$\$ >& log/log-${sim_type}-${n}.txt.mem.usage &" >> $name
     if [[ $sim_type == "detsim" ]];then
-        if [[ $sname == "e+" ]] || [[ $sname == "e-" ]] || [[ $sname == "gamma" ]];then
-            if [[ $pos_xyz != "Uniform" ]];then
-                pos_opt="--positions ${pos_x} ${pos_y} ${pos_z}"
-            fi
+        if [[ $sname == "e+" ]];then
             detsim_special_opt="gun --particles ${sname} ${pos_opt} "
             if [[ $is_energy_range -eq 0 ]];then
                 detsim_special_opt+="--momentums ${e_energy} "
@@ -127,7 +130,7 @@ do
             detsim_special_opt="neutron --input ${SpaNeu_input} --index ${SNindex}"
         fi
 
-        if [[ $sname == "e+" ]] || [[ $sname == "Ge68" ]];then
+        if [[ $sname == "Ge68" ]];then
             OriginUser="--anamgr-normal-hit"
         else
             OriginUser=""
@@ -147,13 +150,23 @@ do
         fi
     fi
 
-    # EOSpath="root://junoeos01.ihep.ac.cn//eos/juno/user/jiangw/J21v2r0-Pre0/"
-    commonOut="--output ${EOSpath}root/${sim_type}-${n}.root --user-output ${EOSpath}user-root/user-${sim_type}-${n}.root"
-    if [[ $sname == "e+" ]] || [[ $sname == "e-" ]] || [[ $sname == "gamma" ]] || [[ $sname == "C14" ]] && [[ $sim_type == "elecsim" ]];then
+    if [[ $sname == "e+" ]];then
+        tmpEOSjw="root://junoeos01.ihep.ac.cn//eos/juno/user/jiangw/TS/SIGNALWINDOW/${e_energy}MeV/${sim_type}/"
+    elif [[ $sname == "Ge68" ]];then
+        tmpEOSjw="root://junoeos01.ihep.ac.cn//eos/juno/user/jiangw/TS/SIGNALWINDOW/Ge68/${sim_type}/"
+    fi
+	
+    commonOut="--output ${tmpEOSjw}root/${sim_type}-${n}.root --user-output ${tmpEOSjw}user-root/user-${sim_type}-${n}.root"
+    if [[ $sname == "e+" ]] || [[ $sname == "C14" ]] && [[ $sim_type == "elecsim" ]];then
         ${sim_type}_woC14_gen
     else
         ${sim_type}_gen
     fi
 done
 chmod +x run/*.sh
+
+cd run
+bash ~jiangw/hepNsub.sh -1 -1
+cd ..
+
 cd $path0
