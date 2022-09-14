@@ -6,7 +6,8 @@ sim_type=${1:-"detsim"}; shift
 # sname=(AmC Laser0.05 Ge68 Laser0.1 Co60 Cs137)
 # sname=(e- e+)
 # sname=(SpaNeu)
-sname=(gamma)
+#sname=(gamma)
+sname=(C14 AmC Laser0.1 Laser0.05 Ge68 Co60 Cs137)
  
 sim_types=(detsim elecsim calib recQTMLE)
 if [[ ! ${sim_types[@]} =~ $sim_type ]];then
@@ -17,15 +18,16 @@ radioS=(Co60 Cs137 Ge68 AmC)
 calibS=(Co60 Cs137 Ge68 AmC Laser0.1 Laser0.05)
 
 seed_start=0
-evtPerJob=1000
-jobnum=20
-laserN=10000
-e_energies=0.1
+evtPerJob0=500
+jobnum0=40
+laserN=10
+#e_energies=0.1
 eventRate=1
 
 rm -f ${sim_type}_subdirs.txt
 for s in ${sname[@]}
 do
+	e_energies=0.1
     echo $s
     if [[ $s == "Co60" ]] || [[ $s == "Cs137" ]];then
         path1="ACU"
@@ -37,7 +39,8 @@ do
 
     if [[ $s == "e+" ]];then
         # e_energies=0_1_2_3_4_5_6_7_8_9_10_0~10
-        e_energies=0_1_2_3_4_5_6_7_8_9_10
+        #e_energies=0_1_2_3_4_5_6_7_8_9_10
+		e_energies=10_9_8_7_6_5_4_3_2_1_0
         jobnum=100
     elif [[ $s == "e-" ]] || [[ $s == "gamma" ]];then
         ### No 0MeV Ek
@@ -46,9 +49,9 @@ do
     elif [[ $s == "SpaNeu" ]];then
         jobnum=5000
     elif [[ $s == "C14" ]];then
-        jobnum=50
+        jobnum=$((40*jobnum0))
     else
-        jobnum=20
+        jobnum=$jobnum0
     fi
 
     if [[ $sim_type == "detsim" ]];then
@@ -63,9 +66,10 @@ do
         elif [[ $s == "SpaNeu" ]];then
             evtPerJob=100
         elif [[ $s == "C14" ]];then
-            evtPerJob=400000
+            # balance the generate speed to radio sources
+            evtPerJob=$((10*evtPerJob))
         else
-            evtPerJob=1000
+            evtPerJob=$evtPerJob0
         fi
     elif [[ $sim_type == "elecsim" ]];then
         evtPerJob=-1
@@ -77,7 +81,7 @@ do
             eventRate=6
         elif [[ $s == "C14" ]];then
             eventRate=40000
-            evtPerJob=20000
+            evtPerJob=-1
         fi
     elif [[ $sim_type == "calib" ]];then
         evtPerJob=-1

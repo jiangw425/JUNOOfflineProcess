@@ -1,35 +1,22 @@
 #include "Event/ElecHeader.h"
 #include "Event/ElecTruthHeader.h"
 #include "Context/TimeStamp.h"
-void readTruthHitTime(){
-	// std::string path = "root://junoeos01.ihep.ac.cn//eos/juno/user/jiangw/J21v1r0-Pre0/ForceTrigger/Cs137/elecsim/root/elecsim-*.root";
-	// std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/11/C14/C14_Uniform/elecsim/root";
-	// std::string path = "/scratchfs/juno/jiangw/Production/11";
-	// std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU-CLS/Ge68/Ge68_0_0_0/elecsim/root";
-	// std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU-CLS/AmC/AmC_0_0_0/elecsim/root";
-	// std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU-CLS/Laser0.1/Laser0.1_0_0_0/elecsim/root";
-	// std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU-CLS/Laser0.05/Laser0.05_0_0_0/elecsim/root";
-	// std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU/Co60/Co60_0_0_0/elecsim/root";
-	// std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU/Cs137/Cs137_0_0_0/elecsim/root";
-	// std::string path = "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/11/e+/e+_Uniform/0MeV/elecsim/root";
-	std::string path = "root://junoeos01.ihep.ac.cn//eos/juno/valprod/valprod0/J21v1r0-Pre0/C14/elecsim/root";
-	const int length = ADCL;
-	string sname[4] = {"Cs137","Co60","Laser0.1","Laser0.05"};
+void readTruthHitTime_rc1(){
+	const int length = 1250;
+	string sname[4] = {"AmC","Ge68","Laser0.1","Laser0.05"};
 	TH1D *hitTime[4];
 	int lineColor[4] = {2,4,6,8};//红紫绿蓝
 	TH1D *all_hitTime_hist = new TH1D("all_hitTime_hist","all_hitTime_hist",length+100,-50,length+50);
 
-	for(int s=0; s<1; ++s){
+	for(int s=0; s<4; ++s){
 		string name = sname[s] + "_hitTime";
         hitTime[s] = new TH1D(name.c_str(),name.c_str(),length+100,-50,length+50);
         hitTime[s]->SetLineColor(lineColor[s]);
 
 		TChain *tTruth = new TChain("Event/Sim/Truth/LpmtElecTruthEvent");
 		TChain *tElec = new TChain("Event/Elec/ElecEvent");
-		//TString spath = Form("%s/elecsim-*.root",path.c_str());
-		TString spath = Form("%s/elecsim-0.root",path.c_str());
-		tElec->Add(spath);
-		tTruth->Add(spath);
+		tElec->Add(Form("root://junoeos01.ihep.ac.cn//eos/juno/valprod/valprod0/J22.1.0-rc0/ACU-CLS/%s/%s_0_0_0/elecsim/root/elecsim-*.root",sname[s].c_str(),sname[s].c_str()));
+		tTruth->Add(Form("root://junoeos01.ihep.ac.cn//eos/juno/valprod/valprod0/J22.1.0-rc0/ACU-CLS/%s/%s_0_0_0/elecsim/root/elecsim-*.root",sname[s].c_str(),sname[s].c_str()));
 		JM::ElecEvent* ee = new JM::ElecEvent();
 		JM::LpmtElecTruthEvent* et = new JM::LpmtElecTruthEvent();
 		tElec->SetBranchAddress("ElecEvent", &ee);
@@ -38,9 +25,8 @@ void readTruthHitTime(){
 		cout << "Total ElecTruth Events: " << tTruth->GetEntries() << endl;
 		if (tElec->GetEntries() != tTruth->GetEntries()) cout << "Wrong input data, please check!" << endl;
 
-		// for (int i = 0; i < tTruth->GetEntries(); i++) {
-		for (int i = 0; i < 1000; i++) {
-			if(i%1000==0) cout<<"Processing "<< i << endl;
+		for (int i = 0; i < tTruth->GetEntries()/100; i++) {
+			if(i%100==0) cout<<"Processing "<< i << endl;
 			tElec->GetEntry(i);
 			tTruth->GetEntry(i);
 
@@ -58,7 +44,7 @@ void readTruthHitTime(){
 				double m_pulseHitTime = m_truths->at(j).pulseHitTime().GetNanoSec(); 
 		 		double m_waveformTime = m_pulseHitTime - m_trigTime + 100;
 				// double m_hitTime = m_truths->at(j).hitTime();
-				// hitTime[s]->Fill(m_waveformTime);
+				hitTime[s]->Fill(m_waveformTime);
 				all_hitTime_hist->Fill(m_waveformTime);
 			}
 		}
@@ -66,15 +52,15 @@ void readTruthHitTime(){
 		tTruth->~TChain();
 		tElec->~TChain();
 	}
-	TCanvas *c = new TCanvas("c","c",1600,900);
+	TCanvas *c = new TCanvas("c","c",1920,1080);
     // c->Divide(2,2);
+	c->cd();
     all_hitTime_hist->Draw();
-	c->Print("tmp.png");
-    // for(int s=0;s<1;++s){
-    //     // nPMT_hist[s]->Scale(1./nPMT_hist[s]->Integral());
-    //     hitTime[s]->Draw("SAME HIST");
-    // }
-
+    for(int s=0;s<4;++s){
+        // nPMT_hist[s]->Scale(1./nPMT_hist[s]->Integral());
+        hitTime[s]->Draw("SAME HIST");
+    }
+	c->BuildLegend();
 
 	// tElec->SetBranchAddress("ElecEvent", &ee);
 	// tTruth->SetBranchAddress("LpmtElecTruthEvent", &et);

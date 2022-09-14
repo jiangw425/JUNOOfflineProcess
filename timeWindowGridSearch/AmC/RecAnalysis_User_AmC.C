@@ -15,60 +15,54 @@ using std::cout;
 using std::endl;
 
 const int parId = 4;
-//const int eid = ENERGY;
+const int eid = 0;
 const int wid = 0;
-const double E = 1.022;
+const double SigE = 1.022;
+const int CalibPosNum = 311;
+const int startseed = 0; 
+const std::string calibsource="AmC";
+const std::string vmethod="QTMLE";
 
 float emean;
 float esigma;
-TH1F* h_Z;
 TH1F* h_E;
-TH2F* th2_energy;
-TProfile* pro_energy;
 
-//#define VResCheck
-#define ERes
-
-void RecAnalysis_User_eplus() 
+void RecAnalysis_User_AmC() 
 {
-    void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, const char* elecFilePath, int evtNum, int jobNum, int baseline);
+    void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, const char* elecFilePath, int jobNum, int baseline);
     emean = 0;
     esigma = 0;
 
     //std::string topdir = "/junofs/users/wenjie/job_SLC6/optical_model/Positron/uniform_J16v1r4/";
     //std::string subdir = "e+_1.022MeV";
     
-    int evtnum = 500;
+    int evtnum = 0;
     int jobnum = FILENUM;
-    int Energy[11] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    int seed = 0;
-    
-    
-    TString recdir = Form("root://junoeos01.ihep.ac.cn//eos/juno/user/jiangw/TS/SIGNALWINDOW/ENERGYMeV/recQTMLE/user-root");
-    TString simdir = Form("/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/e+/e+_Uniform/ENERGYMeV/detsim/user-root");
-    TString elecdir = Form("/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/e+/e+_Uniform/ENERGYMeV/elecsim/user-root");
-
-    RecAnalysisSingleEnergy(simdir, recdir, elecdir, evtnum, jobnum, seed);
+    int Energy[9] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
+	int seed = 0;
+	TString recdir = Form("root://junoeos01.ihep.ac.cn//eos/juno/user/jiangw/TS/SIGNALWINDOW/%s/rec%s/user-root", calibsource.c_str(), vmethod.c_str());
+	TString simdir = Form("/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU-CLS/%s/%s_0_0_0/detsim/user-root",  calibsource.c_str(), calibsource.c_str());
+	TString elecdir= Form("/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU-CLS/%s/%s_0_0_0/elecsim/user-root", calibsource.c_str(), calibsource.c_str());
+	cout<< recdir << endl;
+	RecAnalysisSingleEnergy(simdir, recdir, elecdir, jobnum, seed);
 }
 
 
-void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, const char* elecFilePath, int evtNum, int jobNum, int baseline){
+void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, const char* elecFilePath, int jobNum, int baseline){
     gStyle->SetOptFit(1111);
-    h_Z = new TH1F("h_Z_1.022MeV","Z_{rec}-Z_{edep}_1.022MeV",600,0,6000);
-    h_E = new TH1F("h_E_1.022MeV","E_{rec}_1.022MeV",2000,0,20000);
-    pro_energy = new TProfile("profile_1.022MeV_energy","profile_1.022MeV_energy",100,0,18,0,3);
 
-    TH1D* hSignal = new TH1D("hSignal", "hSignal", 2000, 0., 10.);
-    TH1D* hSpec = new TH1D("hSpec", "hSpec", 2000, 0., 10.);
-    TH1D* hBkg = new TH1D("hBkg", "hBkg", 2000, 0., 10.);
-    TH1D* hNPESignal = new TH1D("hNPESignal", "hNPESignal", 2000, 0., 10.);
+    TH1D* hSignal_QTEn = new TH1D("hSignal_QTEn", "hSignal_QTEn", 2000, 0., 10.);
+    TH1D* hSignal_QEn = new TH1D("hSignal_QEn", "hSignal_QEn", 2000, 0., 10.);
+    TH1D* hBkg_QTEn = new TH1D("hBkg_QTEn", "hBkg_QTEn", 2000, 0., 10.);
+    TH1D* hBkg_QEn = new TH1D("hBkg_QEn", "hBkg_QEn", 2000, 0., 10.);
+
     TChain ch_rec("TRec");
     TChain ch_sim("evt");
     TChain ch_elec("eventindex");
     
 
     ifstream  failIDin;
-    failIDin.open("errorfileid.txt", ios::in);
+    failIDin.open("err/errorfileid_START.txt", ios::in);
     vector<int> vFailId;
     int idtemp = 1;
     while(failIDin>>idtemp) {
@@ -84,11 +78,13 @@ void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, c
             if(vFailId[id]==k) {isContinue = true;break;}
         }
         if(isContinue) continue;
+        // if(k==54961) continue;
         ss  <<  k;
         ss >> n_flag;
         TString recFileAdd = Form("%s/user-recQTMLE-%s.root",recFilePath,n_flag.c_str());
         TString simFileAdd = Form("%s/user-detsim-%s.root",simFilePath,n_flag.c_str());
         TString elecFileAdd = Form("%s/user-elecsim-%s.root",elecFilePath,n_flag.c_str());
+        if(!TFile::Open(recFileAdd)) continue;
         ch_rec.Add(recFileAdd);
         ch_sim.Add(simFileAdd);
         ch_elec.Add(elecFileAdd);
@@ -97,27 +93,26 @@ void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, c
     TObjArray* recFileElements = ch_rec.GetListOfFiles();
     TIter recnext(recFileElements);
     TChainElement* recChEl = 0;
+
     TObjArray* simFileElements = ch_sim.GetListOfFiles();
     TIter simnext(simFileElements);
     TChainElement* simChEl = 0;
+
     TObjArray* elecFileElements = ch_elec.GetListOfFiles();
     TIter elecnext(elecFileElements);
     TChainElement* elecChEl = 0;
- 
-    #ifdef ERes
-    TFile* sfile = new TFile("Assemb.root","RECREATE");
-    #endif
 
-    #ifdef VResCheck
-    TFile* sfile = new TFile("Assemb_VResCheck.root","RECREATE");
-    #endif
+    TFile* sfile = new TFile("Assemb.root","RECREATE");
+
 
     TTree* rectree = new TTree("evt","evt");
     Float_t recx, recy, recz, recQx, recQy, recQz, recQTx, recQTy, recQTz;
     Float_t timeRecx, timeRecy, timeRecz, timeRecE, timeRect0, Truex, Truey, Truez, TrueQx, TrueQy, TrueQz;
-    Float_t QEn, QTEn, NQE, TrueR, TrueQR, QTR, QR, QTt0, Tt0, m_TR, Qtime, Ttime, QTtime, nPhotons;
-    Float_t Qstat, Tstat, QTstat, memory, edep, edepX, edepY, edepZ;
+    Float_t QEn, QTEn, NQE, TrueR, TrueQR, QTR, QR, QTt0, Tt0, m_TR,time, nPhotons;
+    Float_t Qstat, Tstat, QTstat, memory;
     Double_t triggerT, dTriggerT, corrEvtT;
+    Float_t edep, edepX, edepY, edepZ;
+
     rectree->Branch("recx",&recx,"recx/F");
     rectree->Branch("recy",&recy,"recy/F");
     rectree->Branch("recz",&recz,"recz/F");
@@ -159,22 +154,21 @@ void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, c
     rectree->Branch("m_QTR",&QTR,"QTR/F");
 
     rectree->Branch("QTt0",&QTt0,"QTt0/F");
-    rectree->Branch("Qtime",&Qtime,"Qtime/F");
-    rectree->Branch("Ttime",&Ttime,"Ttime/F");
-    rectree->Branch("QTtime",&QTtime,"QTtime/F");
+    rectree->Branch("time",&time,"time/F");
     rectree->Branch("triggerT",&triggerT,"triggerT/F");
     rectree->Branch("dTriggerT",&dTriggerT,"dTriggerT/F");
     rectree->Branch("corrEvtT",&corrEvtT,"corrEvtT/D");
 
     rectree->Branch("memory",&memory,"memory/F");
-    rectree->Branch("edep", &edep,"edep/F");
+    rectree->Branch("edep",&edep,"edep/F");
     rectree->Branch("edepX",&edepX,"edepX/F");
     rectree->Branch("edepY",&edepY,"edepY/F");
     rectree->Branch("edepZ",&edepZ,"edepZ/F");
 
     while (( recChEl=(TChainElement*)recnext() )){
-        TFile* recf = TFile::Open(recChEl->GetTitle());
+        TFile* recf = TFile::Open(recChEl->GetTitle(), "READ");
         cout << recChEl->GetTitle() << endl;
+        if(!recf) continue;
         if(recf->TestBit(TFile::kRecovered)) continue;
         if(recf->IsZombie()) continue;
         TTree* rec_ch = (TTree*)recf -> Get("TRec");
@@ -193,9 +187,9 @@ void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, c
         rec_ch -> SetBranchAddress("timeRecE",&timeRecE);
         rec_ch -> SetBranchAddress("timeRect0",&timeRect0);
 
-        // rec_ch -> SetBranchAddress("Truex",&Truex);
-        // rec_ch -> SetBranchAddress("Truey",&Truey); 
-        // rec_ch -> SetBranchAddress("Truez",&Truez);
+        rec_ch -> SetBranchAddress("Truex",&Truex);
+        rec_ch -> SetBranchAddress("Truey",&Truey); 
+        rec_ch -> SetBranchAddress("Truez",&Truez);
         rec_ch -> SetBranchAddress("TrueQx",&TrueQx);
         rec_ch -> SetBranchAddress("TrueQy",&TrueQy); 
         rec_ch -> SetBranchAddress("TrueQz",&TrueQz);
@@ -207,23 +201,22 @@ void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, c
         rec_ch -> SetBranchAddress("m_TR",&m_TR);
         rec_ch -> SetBranchAddress("m_QR",&QR);
         rec_ch -> SetBranchAddress("m_QTR",&QTR);
-        // rec_ch -> SetBranchAddress("TrueR",&TrueR);
+        rec_ch -> SetBranchAddress("TrueR",&TrueR);
         rec_ch -> SetBranchAddress("TrueQR",&TrueQR);
         rec_ch -> SetBranchAddress("recQTt0",&QTt0);
 
         rec_ch -> SetBranchAddress("m_Qstat",&Qstat);
         rec_ch -> SetBranchAddress("m_Tstat",&Tstat);
         rec_ch -> SetBranchAddress("m_QTstat",&QTstat);
-        rec_ch -> SetBranchAddress("m_Qtime",&Qtime);
-        rec_ch -> SetBranchAddress("m_Ttime",&Ttime);
-        rec_ch -> SetBranchAddress("m_QTtime",&QTtime);
+        rec_ch -> SetBranchAddress("m_QTtime",&time);
         rec_ch -> SetBranchAddress("m_triggerT",&triggerT);
         rec_ch -> SetBranchAddress("m_dTriggerT",&dTriggerT);
         rec_ch -> SetBranchAddress("m_FadcEvtT",&corrEvtT);
 
         rec_ch -> SetBranchAddress("m_memory",&memory);
-        // rec_ch -> SetBranchAddress("edep", &edep);
-        
+        //rec_ch -> SetBranchAddress("edep", &edep);
+
+
         simChEl=(TChainElement*)simnext();
         TFile* simf = new TFile(simChEl->GetTitle());
         cout << simChEl->GetTitle() << endl;
@@ -231,6 +224,7 @@ void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, c
         if(simf->IsZombie()) continue;
         TTree* sim_ch = (TTree*)simf -> Get("evt");
         if(sim_ch->IsZombie()) continue;
+
         sim_ch -> SetBranchAddress("edep",&edep);
         sim_ch -> SetBranchAddress("edepX",&edepX);
         sim_ch -> SetBranchAddress("edepY",&edepY);
@@ -246,8 +240,12 @@ void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, c
         vector<int>* entries = new vector<int>;
         elec_ch -> SetBranchAddress("entries",&entries);
 
+        
         cout<<sim_ch->GetEntries()<< '\t' << elec_ch->GetEntries()<< '\t' << rec_ch->GetEntries()<< endl;
-
+        // if(elec_ch->GetEntries()!=rec_ch->GetEntries()) continue;
+            
+        /*
+        int badfile = 0;
         for(int i=0; i<rec_ch->GetEntries(); i++){
             elec_ch->GetEntry(i);
             rec_ch->GetEntry(i);
@@ -257,29 +255,32 @@ void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, c
                 if(*iter<simk) simk = *iter;
                 iter++;
             }
+            if(simk>500) break;
             sim_ch->GetEntry(simk);
 
-            TrueR = sqrt(edepX*edepX+edepY*edepY+edepZ*edepZ);
-            #ifdef VResCheck 
-            bool IsBadFile = false;
-            if(TMath::Abs(QR - TrueR)>2000) {cout << "####### Wrong File! #######" << recChEl->GetTitle() << endl;IsBadFile = true; break;}
-            if(IsBadFile) continue;
-            #endif
-
-            Truex=edepX;
-            Truey=edepY;
-            Truez=edepZ;
+            if(QEn/edep < 0.7) badfile++;
+        }
+        if(badfile>5) {
+            cout<< ">>>>>>>>>>>>>>> Find unmatch file <<<<<<<<<<<<<<<"<<endl;
+            delete rec_ch;
+            delete elec_ch;
+            delete sim_ch;
+            delete recf;
+            delete elecf;
+            delete simf;
+            continue;
+        }
+        */
+        for(int i=0; i<rec_ch->GetEntries(); i++){
+            rec_ch->GetEntry(i);
             rectree->Fill(); 
 
+            if(dTriggerT>5.e5) {hBkg_QTEn->Fill(QTEn); hBkg_QEn->Fill(QEn);}
+            else {
+                if(QTR<17200) hSignal_QTEn->Fill(QTEn);
+                if(QR<17200) hSignal_QEn->Fill(QEn);
+            } 
   
-            Float_t edep_r = sqrt(recx*recx + recy*recy + recz*recz);
-            pro_energy->Fill(pow(edep_r/1000.,3), QTEn,1);
-            
-            
-            if(edep_r < 17200.) {
-                hSignal->Fill(QEn);
-                hNPESignal->Fill(nPhotons);
-            }
         }
 
         delete rec_ch;
@@ -292,42 +293,18 @@ void RecAnalysisSingleEnergy(const char* simFilePath, const char* recFilePath, c
 
     sfile->cd();
     rectree->Write();
-    hBkg->Write();
-    //hSpec->Write();
-    hSignal->Write();
-    hNPESignal->Write();
+    hBkg_QTEn->Write();
+    hBkg_QEn->Write();
+    hSignal_QTEn->Write();
+    hSignal_QEn->Write();
 
+    delete rectree;
     sfile->Close();
     
-    TCanvas* myc=new TCanvas("myc","a canvas",10,10,700,500);
-    h_Z->GetXaxis()->SetTitle("R^{3}[m^{3}]");
-    h_Z->Draw();
+    delete hSignal_QTEn;
+    delete hSignal_QEn;
+    delete hBkg_QTEn;
+    delete hBkg_QEn;
 
-    TCanvas* myc1=new TCanvas("myc1","a canvas",10,10,700,500);
-    //h_E->Fit("gaus","W","C",EN_MIN,EN_MAX);
-    //TF1* fitE = (TF1*)h_E->GetFunction("gaus");
-    //Float_t energy_mean = fitE ->GetParameter(1);
-    //Float_t energy_sigma = fitE->GetParameter(2)/fitE->GetParameter(1);
-    h_E->GetXaxis()->SetTitle("energy[MeV]");
-    h_E->Draw();
-
-    TCanvas* myc_energy=new TCanvas("myc_energy","energy distribution",10,10,900,500);
-    myc_energy->Divide(2,1);
-    pro_energy->GetXaxis()->SetTitle("R_{edep}^{3}[m^{3}]");
-    pro_energy->GetYaxis()->SetTitle("energy[MeV]");
-    pro_energy->GetYaxis()->SetTitleOffset(1.2);
-    pro_energy->GetYaxis()->CenterTitle();
-    pro_energy->SetLineColor(2);
-    myc_energy->cd(1);
-    myc_energy->cd(2);
-    pro_energy->GetYaxis()->SetRangeUser(0,3);
-    pro_energy->Draw();
-
-//    emean = energy_mean;
-//    esigma = 100*energy_sigma;
-//    cout << "*******************************************" << endl;
-//    cout << "    energy mean:" <<  energy_mean << " MeV"  << endl;
-//    cout << "    energy resolution: " << 100*energy_sigma << " % " << endl;
-//    cout << "*******************************************" << endl;
     cout << "Successfully" << endl;
 }

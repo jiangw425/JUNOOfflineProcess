@@ -6,7 +6,7 @@ void script2()
   TH1D* m_meanWaveform[20000];
   TH1D* m_Counter;
   int m_totalPMT = 17612;
-  int m_length = 1250;
+  int m_length = ADCL;
   TH1* m_tempH;
   TH1D* m_SPERE[m_totalPMT];
   TH1D* m_SPEIM[m_totalPMT];

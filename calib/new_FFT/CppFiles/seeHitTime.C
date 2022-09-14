@@ -1,5 +1,6 @@
 #include "/junofs/users/jiangw/include/pmtflag.h"
 #include "/junofs/users/jiangw/include/CdID2pmtID.h"
+const int adcl = ADCL;
 void seeHitTime(){
     bool *hmmtpmt = pmtflag();
     gROOT->ProcessLine("#include <vector>");
@@ -10,7 +11,7 @@ void seeHitTime(){
     chain->SetBranchAddress("Time",&Time);
     chain->SetBranchAddress("PMTID",&detID);
 
-    TH1D *h = new TH1D("hitTime","hitTime",1250,0,1250);
+    TH1D *h = new TH1D("hitTime","hitTime",adcl,0,adcl);
     cout<< "total event: "<<chain->GetEntries()<<endl;
     for(int i=0; i<chain->GetEntries(); ++i){//chain->GetEntries()
         Time->clear();

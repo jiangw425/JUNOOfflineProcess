@@ -2,18 +2,18 @@
 junoenv=/cvmfs/juno.ihep.ac.cn/centos7_amd64_gcc830/Pre-Release/J21v1r0-Pre2/setup.sh
 yourenv=/junofs/users/jiangw/J21v1r0-Pre2/bashrc
 elecpath=/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/11
+adcl=1250
+dnstart=725
+dnend=975
 ### --- Please modify the variables above. --- ###
 ###  junoenv: official juno offline env setup  ###
 ###  yourenv: your relative copied from trunk  ###
 ###  elecpath: path includes the elecsim files ###
 
 envpath=`echo ${yourenv%/*}`
-dnstart=725
-dnend=975
 # nameflag=`echo $junoenv | grep -o "[J][0-9]\+[v][0-9][r][0-9][-][P][r][e][0-9]"`
 # envpath=/junofs/users/jiangw/J21v1r0-Pre0
 ntimesrms="--NTimesRMS 2.2"
-
 copyPath=/junofs/users/jiangw/GitCode/JUNOOfflineProcess/calib/new_FFT
 dnlen=$(($dnend-$dnstart))
 
@@ -22,9 +22,16 @@ rsync $copyPath/../autoRun_calibration.sh .
 mkdir -p CppFiles
 cd CppFiles
 # cp ${copyPath}/CppFiles/* .
-sed "s#DNLEN#${dnlen}#g" ${copyPath}/CppFiles/calib_dn.C > calib_dn.C
-sed "s#DNLEN#${dnlen}#g" ${copyPath}/CppFiles/script3.C  >  script3.C
-sed "s#DNLEN#${dnlen}#g" ${copyPath}/CppFiles/script4.C  >  script4.C
+sed "s#ADCL#${adcl}#g"   ${copyPath}/CppFiles/drawamp2.C     > drawamp2.C
+sed "s#ADCL#${adcl}#g"   ${copyPath}/CppFiles/extractWaves.C > extractWaves.C
+sed "s#ADCL#${adcl}#g"   ${copyPath}/CppFiles/filterWaves.C  > filterWaves.C
+sed "s#ADCL#${adcl}#g"   ${copyPath}/CppFiles/get_raw2D.C    > get_raw2D.C
+sed "s#ADCL#${adcl}#g"   ${copyPath}/CppFiles/getFilter.C    > getFilter.C
+sed "s#ADCL#${adcl}#g"   ${copyPath}/CppFiles/script2.C      > script2.C
+sed "s#ADCL#${adcl}#g"   ${copyPath}/CppFiles/seeHitTime.C   > seeHitTime.C
+sed "s#DNLEN#${dnlen}#g" ${copyPath}/CppFiles/calib_dn.C     > calib_dn.C
+sed "s#DNLEN#${dnlen}#g" ${copyPath}/CppFiles/script3.C      >  script3.C
+sed -e "s#DNLEN#${dnlen}#g" -e "s#ADCL#${adcl}#g" ${copyPath}/CppFiles/script4.C  >  script4.C
 cd - >/dev/null 2>&1
 
 mkdir -p BashFiles

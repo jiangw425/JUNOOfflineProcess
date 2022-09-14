@@ -1,5 +1,9 @@
 #!/bin/bash
 basepath="BASEPATH"
+if [[ ${basepath:0:7} == "root://" ]];then
+    echo "EOS dir need generate manually"
+    exit 0
+fi
 sname=(Co60 Cs137 AmC Ge68 Laser0.1 Laser0.05 C14)
 
 calibS=(Co60 Cs137 AmC Ge68 Laser0.1 Laser0.05)

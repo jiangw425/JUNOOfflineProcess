@@ -10,6 +10,7 @@ int getHit(double AC[], int HitBTime[1000], int HitETime[1000]);
 int hitAlg(TH1D* h, int HitBTime[1000], int HitETime[1000]);
 int intewjw[2] = {NNVTINTEW,HMMTINTEW};
 int widthT[2] = {NNVTWIDTH,HMMTWIDTH};
+const int adcl = ADCL;
 void drawamp2()
 {
   gStyle->SetOptStat(0);
@@ -20,7 +21,7 @@ void drawamp2()
   TFile* f0 = new TFile("waves_trans.root", "read");
   TTree* t0 = (TTree*)f0->Get("waves_trans");
   TH1D* dividedt = 0;
-  int m_length = 1250;
+  int m_length = adcl;
   int id = 0;
   int k0 = 15;
   int k1 = 50;
@@ -126,7 +127,7 @@ memset(jw, 0, 2 * 2 * kd * sizeof(int));
 
 int getHit(double AC[], int HitBTime[1000], int HitETime[1000])
 {
-  int m_length = 1250;
+  int m_length = adcl;
   // find over-threshold wave. threshold = 0.6, 0.65
   int Pass = 0, HitCount = 0;
   for (int i = 0; i < m_length; i++) {
@@ -160,7 +161,7 @@ int getHit(double AC[], int HitBTime[1000], int HitETime[1000])
 
 int hitAlg(TH1D* h, int HitBTime[1000], int HitETime[1000])
 {
-  const int m_length = 1250;
+  const int m_length = adcl;
   double AC[m_length];
 
   blamp->Reset();

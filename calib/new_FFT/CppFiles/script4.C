@@ -1,7 +1,8 @@
 #include "/junofs/users/jiangw/include/myincludes.h"
 double Pi = 3.1415926;
 const int Npmt = 17612;
-double length = 1250.e-9;
+const int adcl = ADCL;
+double length = adcl*1.e-9;
 double timeinterval = DNLEN.e-9;
 vector<int> circle;
 vector<int> copyno;
@@ -51,7 +52,7 @@ bool script4()
   }
   TH1F* realDarkrate = (TH1F*)inputfile2->Get("darkCharge");
   realDarkrate->Scale(1. / (totalWave2* timeinterval));
-  darkWaveCount->Scale(1. / timeinterval * 1250.e-9);
+  darkWaveCount->Scale(1. / timeinterval * adcl*1.e-9);
 
   TH1F* spespec;
   for (int i = 0; i < Npmt; i++) {

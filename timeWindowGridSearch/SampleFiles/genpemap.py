@@ -78,7 +78,7 @@ for jj in range(TotalPosNum):
     #f = TFile("/junofs/users/huanggh/EnergyRec/GenCalibData/ACU_CLS_MAP/nPEMap/J20v2r0-Pre2_phy_zxt_decon/share/Ge68/Dyn/PE-theta-distribution-%d.root"%(jj), "READ");
     f = TFile("../root/PE-theta-distribution-%d.root"%(jj), "READ");
     LGrTemp = f.Get("RecGraph");
-    SGrTemp = f.Get("RecGraph");
+    SGrTemp = f.Get("RecNSPMTGraph");
     print(j, LGrTemp.Eval(90.), SGrTemp.Eval(90.))
     
     

@@ -3,7 +3,7 @@
 #include "Context/TimeStamp.h"
 void readTruthHitTime(){
 	const int length = 1250;
-	string sname[4] = {"Cs137","Co60","Laser0.1","Laser0.05"};
+	string sname[4] = {"AmC","Ge68","Laser0.1","Laser0.05"};
 	TH1D *hitTime[4];
 	int lineColor[4] = {2,4,6,8};//红紫绿蓝
 	TH1D *all_hitTime_hist = new TH1D("all_hitTime_hist","all_hitTime_hist",length+100,-50,length+50);
@@ -15,8 +15,8 @@ void readTruthHitTime(){
 
 		TChain *tTruth = new TChain("Event/Sim/Truth/LpmtElecTruthEvent");
 		TChain *tElec = new TChain("Event/Elec/ElecEvent");
-		tElec->Add(Form("root://junoeos01.ihep.ac.cn//eos/juno/user/jiangw/J21v1r0-Pre0/ForceTrigger/%s/elecsim/root/elecsim-*.root",sname[s].c_str()));
-		tTruth->Add(Form("root://junoeos01.ihep.ac.cn//eos/juno/user/jiangw/J21v1r0-Pre0/ForceTrigger/%s/elecsim/root/elecsim-*.root",sname[s].c_str()));
+		tElec->Add(Form("root://junoeos01.ihep.ac.cn//eos/juno/valprod/valprod0/J22.1.0-rc0/ACU-CLS/%s/%s_0_0_0/elecsim/root/elecsim-*.root",sname[s].c_str(),sname[s].c_str()));
+		tTruth->Add(Form("root://junoeos01.ihep.ac.cn//eos/juno/valprod/valprod0/J22.1.0-rc0/ACU-CLS/%s/%s_0_0_0/elecsim/root/elecsim-*.root",sname[s].c_str(),sname[s].c_str()));
 		JM::ElecEvent* ee = new JM::ElecEvent();
 		JM::LpmtElecTruthEvent* et = new JM::LpmtElecTruthEvent();
 		tElec->SetBranchAddress("ElecEvent", &ee);
@@ -26,7 +26,7 @@ void readTruthHitTime(){
 		if (tElec->GetEntries() != tTruth->GetEntries()) cout << "Wrong input data, please check!" << endl;
 
 		for (int i = 0; i < tTruth->GetEntries()/100; i++) {
-			if(i%1000==0) cout<<"Processing "<< i << endl;
+			if(i%100==0) cout<<"Processing "<< i << endl;
 			tElec->GetEntry(i);
 			tTruth->GetEntry(i);
 
@@ -54,12 +54,13 @@ void readTruthHitTime(){
 	}
 	TCanvas *c = new TCanvas("c","c",1920,1080);
     // c->Divide(2,2);
+	c->cd();
     all_hitTime_hist->Draw();
     for(int s=0;s<4;++s){
         // nPMT_hist[s]->Scale(1./nPMT_hist[s]->Integral());
         hitTime[s]->Draw("SAME HIST");
     }
-
+	c->BuildLegend();
 
 	// tElec->SetBranchAddress("ElecEvent", &ee);
 	// tTruth->SetBranchAddress("LpmtElecTruthEvent", &et);

@@ -4,9 +4,10 @@ sim_type=${1:-"recQTMLE"}; shift
 # sname=(C14)
 # sname=(Laser0.05 Ge68 Laser0.1 Co60 Cs137 AmC)
 # sname=(AmC Laser0.05 Ge68 Laser0.1 Co60 Cs137)
-sname=(Ge68 e+)
+# sname=(Ge68 e+)
 # sname=(SpaNeu)
- 
+sname=(AmC e+)
+
 sim_types=(detsim elecsim calib recQTMLE)
 if [[ ! ${sim_types[@]} =~ $sim_type ]];then
     echo "Wrong sim_type! Choose from: ${sim_types[@]}"
@@ -36,7 +37,9 @@ do
     if [[ $s == "e+" ]];then
         # e_energies=0_1_2_3_4_5_6_7_8_9_10_0~10
         # e_energies=0_1_2_3_4_5_6_7_8_9_10
-        e_energies=0_2_3_4_5_8
+
+        e_energies=0_0.5_1_2_3_4_5_8
+		# e_energies=1
         jobnum=100
     elif [[ $s == "SpaNeu" ]];then
         jobnum=5000
@@ -83,7 +86,7 @@ do
     pos_xyz=()
     if [[ $s == "e+" ]];then
         pos_xyz[0]="Uniform"
-    elif [[ $s == "Ge68" ]];then
+    elif [[ $s == "Ge68" ]] || [[ $s == "AmC" ]];then
         pos_xyz[0]="0_0_0"
     # elif [[ ${radioS[@]} =~ $s ]] || [[ $s == "Laser0.05" ]];then
     #     posnum_counter=0

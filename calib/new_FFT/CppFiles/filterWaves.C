@@ -1,5 +1,6 @@
 #include "/junofs/users/jiangw/include/myincludes.h"
 // void filterWaves()
+const int adcl = ADCL;
 void filterWaves()
 {
   TH1D* spere[17612];
@@ -27,8 +28,8 @@ void filterWaves()
 
   // TH1D* h_filter0 = filter(50, 350, 30);
   // h_filter0->SetNameTitle("f0", "f0");
-  TH1D* h_filter0 = new TH1D("f0", "f0", 1250, 0, 1250);
-  for (int i = 0; i < 1250; i++) h_filter0->SetBinContent(i + 1, 1.);
+  TH1D* h_filter0 = new TH1D("f0", "f0", adcl, 0, adcl);
+  for (int i = 0; i < adcl; i++) h_filter0->SetBinContent(i + 1, 1.);
 
   // nnvt
   // TH1D* h_filter1 = filter(100, 150, 15);
@@ -65,7 +66,7 @@ void filterWaves()
   TH1D* df = 0;
   TH1D* w = 0;
   TH1D* spe2raw = 0;
-  double arr[1250];
+  double arr[adcl];
   TTree* str = new TTree("waves_trans", "waves_trans");
   str->Branch("rawfmag", "TH1D", &rf);
   str->Branch("rawh", "TH1D", &w_tmp);
@@ -101,12 +102,12 @@ void filterWaves()
       spe2raw->Divide(w_tmp);
       spe2raw->SetNameTitle("spe2raw", "spe2raw");
       k = 0;
-      for (int j = 1150; j < 1250; j++) arr[k++] = w->GetBinContent(j + 1);
+      for (int j = 1150; j < adcl; j++) arr[k++] = w->GetBinContent(j + 1);
       for (int j = 0; j < 1150; j++) {
         arr[k++] = w->GetBinContent(j + 1);
         w->SetBinContent(j + 1, arr[j]);
       }
-      for (int j = 1150; j < 1250; j++) w->SetBinContent(j + 1, arr[j]);
+      for (int j = 1150; j < adcl; j++) w->SetBinContent(j + 1, arr[j]);
     } else {
       // wd->set_input(w_tmp, h_filter0, spere[id], speim[id]);
       wd->set_input(w_tmp, h_filter1, spere[id], speim[id]);
@@ -120,12 +121,12 @@ void filterWaves()
       spe2raw->Divide(w_tmp);
       spe2raw->SetNameTitle("spe2raw", "spe2raw");
       k = 0;
-      for (int j = 1150; j < 1250; j++) arr[k++] = w->GetBinContent(j + 1);
+      for (int j = 1150; j < adcl; j++) arr[k++] = w->GetBinContent(j + 1);
       for (int j = 0; j < 1150; j++) {
         arr[k++] = w->GetBinContent(j + 1);
         w->SetBinContent(j + 1, arr[j]);
       }
-      for (int j = 1150; j < 1250; j++) w->SetBinContent(j + 1, arr[j]);
+      for (int j = 1150; j < adcl; j++) w->SetBinContent(j + 1, arr[j]);
     }
     w->SetNameTitle(w_tmp->GetName(), w_tmp->GetTitle());
     str->Fill();

@@ -1,14 +1,17 @@
 #!/bin/bash
 path0=`pwd`
-
-sim_types=(detsim elecsim calib recQTMLE)
+enableCkLog=1
+# sim_types=(detsim elecsim calib recQTMLE)
+sim_types=(detsim elecsim)
 txt_file="${sim_types[0]}_subdirs.txt"
 
 for dir in `cat $txt_file`
 do
     echo $dir
     cd $dir
-    filenum=`ls *.sh | wc -l`
+    tmpf1=$path0/tmp_run.txt
+    ls *.sh > $tmpf1
+    filenum=`cat $tmpf1 | wc -l`
     cd ../..
     path1=`pwd`
     if [[ ! -d onekey_run ]];then mkdir onekey_run; fi
@@ -18,21 +21,45 @@ do
     do
         echo $st
         cd $st/run
-        if [[ `ls *.sh | wc -l` -ne $filenum ]];then
+        tmpf3=$path0/tmp_${st}_run.txt
+        ls *.sh > $tmpf3
+        if [[ `cat $tmpf3 | wc -l` -ne $filenum ]];then
             echo "`pwd` file num is not $filenum !"
+            rm -f $tmpf3
             exit 1
+        fi
+        if [[ $enableCkLog -eq 1 ]];then
+            tmpf2=$path0/tmp_${st}_log.txt
+            ls ../log | grep .txt > $tmpf2
+            echo "asd" >> $tmpf2
         fi
         for((n=0;n<${filenum};n++))
         do
             jobname=${jnb}${n}.sh
-            tmpjob=`ls *.sh | grep _${n}.sh | head -n 1`
+            tmpjob=`cat $tmpf3 | grep _${n}.sh | head -n 1`
             if [[ $st == ${sim_types[0]} ]];then
                 echo "#!/bin/bash" >> $jobname
             fi
-            echo "bash `pwd`/$tmpjob" >> $jobname
+            if [[ $enableCkLog -eq 1 ]];then
+                tmplog=`cat $tmpf2 | grep "\-${n}.txt" | head -n 1`
+                if [[ $tmplog == "" ]];then
+                    echo "bash `pwd`/$tmpjob" >> $jobname
+                else
+                    bash ~jiangw/sck.sh ../log/$tmplog > /dev/null
+                    if [[ $? -eq 0 ]];then
+                        echo "sleep 3" >> $jobname
+                    else
+                        echo "bash `pwd`/$tmpjob" >> $jobname
+                    fi
+                fi
+            else
+                echo "bash `pwd`/$tmpjob" >> $jobname
+            fi
         done
+        rm -f $tmpf2 $tmpf3
         cd $path1
     done
+    rm -f $tmpf1
     chmod +x ${jnb}*.sh
     hep_sub ${jnb}"%{ProcId}".sh -n ${filenum} -mem 3000 -e /dev/null -o /dev/null
     cd $path0

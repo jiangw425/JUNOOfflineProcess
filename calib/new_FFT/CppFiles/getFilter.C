@@ -1,4 +1,5 @@
 #include "/junofs/users/jiangw/include/myincludes.h"
+const int adcl = ADCL;
 void getFilter()
 {
   gStyle->SetOptStat(0);
@@ -85,14 +86,14 @@ void getFilter()
   // grouth->Draw();
   // groutn->Draw("same");
 
-  TH1D* fh0 = new TH1D("fh0", "fh0", 1250, 0, 1250);
-  TH1D* fn0 = new TH1D("fn0", "fn0", 1250, 0, 1250);
+  TH1D* fh0 = new TH1D("fh0", "fh0", adcl, 0, adcl);
+  TH1D* fn0 = new TH1D("fn0", "fn0", adcl, 0, adcl);
   double xx, yy;
   fh0->SetBinContent(1, 0);
   fn0->SetBinContent(1, 0);
   int ih = 0;
   int in = 0;
-  for (int i = 1; i < 1250; i++) {
+  for (int i = 1; i < adcl; i++) {
     grouth->GetPoint(i - 1, xx, yy);
     if (yy < 0) {
       ih = i;
@@ -100,7 +101,7 @@ void getFilter()
     }
     fh0->SetBinContent(i + 1, yy);
   }
-  for (int i = 1; i < 1250; i++) {
+  for (int i = 1; i < adcl; i++) {
     groutn->GetPoint(i - 1, xx, yy);
     if (yy < 0) {
       in = i;
@@ -108,7 +109,7 @@ void getFilter()
     }
     fn0->SetBinContent(i + 1, yy);
   }
-  for (int i = 0; i < 1250; i++) {
+  for (int i = 0; i < adcl; i++) {
     fh0->SetBinContent(i + 1, (fh0->GetBinContent(i + 1)));
     fn0->SetBinContent(i + 1, (fn0->GetBinContent(i + 1)));
   }

@@ -52,7 +52,7 @@ elif [[ $input -eq 2 ]];then
 	if [[ ! -f "timeOffset_roofit.txt" ]];then
 		time root -l -b -q "$path0/CppFiles/rooRectimeH.C" > fit.log
 	fi
-	root "${path0}/CppFiles/drawTFS.C"
+	root -l -b -q "${path0}/CppFiles/drawTFS.C"
 	mv TimeOffset.png $path0/CheckStation
 	cp timeOffset_sub_roofit.txt $path0/Parameters
 fi

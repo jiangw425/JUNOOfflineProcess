@@ -9,6 +9,7 @@ double rms = 0;
 int getHit(double AC[], int HitBTime[1000], int HitETime[1000]);
 int hitAlg(TH1D* h, int HitBTime[1000], int HitETime[1000]);
 int intew = 9;
+const int adcl = ADCL;
 void drawamp()
 {
   gStyle->SetOptStat(0);
@@ -20,7 +21,7 @@ void drawamp()
   // TFile* f0 = new TFile("newfilter/waves_trans_Ge68_newfilter4.root", "read");
   TTree* t0 = (TTree*)f0->Get("waves_trans");
   TH1D* dividedt = 0;
-  int m_length = 1250;
+  int m_length = adcl;
   int id = 0;
   int k0 = 0;
   int k1 = 50;
@@ -219,7 +220,7 @@ void drawamp()
 
 int getHit(double AC[], int HitBTime[1000], int HitETime[1000])
 {
-  int m_length = 1250;
+  int m_length = adcl;
   // find over-threshold wave. threshold = 0.6, 0.65
   int Pass = 0, HitCount = 0;
   for (int i = 0; i < m_length; i++) {
@@ -253,7 +254,7 @@ int getHit(double AC[], int HitBTime[1000], int HitETime[1000])
 
 int hitAlg(TH1D* h, int HitBTime[1000], int HitETime[1000])
 {
-  const int m_length = 1250;
+  const int m_length = adcl;
   double AC[m_length];
 
   blamp->Reset();

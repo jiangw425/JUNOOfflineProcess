@@ -3,7 +3,7 @@
 #include "Event/ElecFeeCrate.h"
 #include "Event/ElecFeeChannel.h"
 #include "TH2D.h"
-const int m_length = 1250;
+const int m_length = ADCL;
 const int Npmt = 17612;
 int Ntotal = 200000;
 // int Ntotal = 100;
@@ -42,7 +42,7 @@ void get_raw2D_NUM()
   cout<<"The Entry is "<<tr->GetEntries()<<endl;
   int counter_n = 0;
 
-  const int f_length=1250;
+  const int f_length=adcl;
   int f_length2=f_length;
   TVirtualFFT* fft_forward=TVirtualFFT::FFT(1, &f_length2, "R2C EX K");
   double input_raw[f_length];
@@ -82,12 +82,12 @@ void get_raw2D_NUM()
       } else {
         continue;
       }
-      // h_tmp = new TH1D(name, title, 1250, 0, 1250);
+      // h_tmp = new TH1D(name, title, adcl, 0, adcl);
       double baseline = 0;
       for (int j = 0; j < 50; j++) baseline += channel.adc().at(j);
       baseline /= 50.;
 
-      for (int j = 0; j < 1250; j++) {
+      for (int j = 0; j < adcl; j++) {
         // h_tmp->SetBinContent(j + 1, channel.adc().at(j) - baseline);
         input_raw[j]=channel.adc().at(j) - baseline;
       }

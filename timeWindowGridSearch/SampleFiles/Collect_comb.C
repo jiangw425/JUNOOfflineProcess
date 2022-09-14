@@ -64,7 +64,7 @@ void Collect_comb()
     std::ifstream lfile; 
     lfile.open("lgridmu_SOURCE_R3.txt", std::ios::in);
     std::ifstream sfile; 
-    sfile.open("lgridmu_SOURCE_R3.txt", std::ios::in);
+    sfile.open("sgridmu_SOURCE_R3.txt", std::ios::in);
     for(int ipt=0;ipt<ThetaPMTNum;ipt++) {
         cout<<ipt<<endl;
         TH2F* hLMu2D = new TH2F(Form("hLMu2D_%d", ipt), Form("hLMu2D_%d", ipt), RBinN, -rstep/2., RRange + rstep/2., TBinN, -tstep/2., TRange + tstep/2.);

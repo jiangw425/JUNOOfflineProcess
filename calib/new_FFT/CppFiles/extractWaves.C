@@ -2,7 +2,7 @@
 #include "Event/ElecHeader.h"
 #include "Event/ElecFeeCrate.h"
 #include "Event/ElecFeeChannel.h"
-const int m_length = 1250;
+const int m_length = ADCL;
 const int Npmt = 17612;
 int Ntotal = 100000;
 // int Ntotal = 100;
@@ -58,11 +58,11 @@ void extractWaves(int is_forceTrigger=0)
       } else {
         continue;
       }
-      h_tmp = new TH1D(name, title, 1250, 0, 1250);
+      h_tmp = new TH1D(name, title, adcl, 0, adcl);
       double baseline = 0;
       for (int j = 0; j < 50; j++) baseline += channel.adc().at(j);
       baseline /= 50.;
-      for (int j = 0; j < 1250; j++) {
+      for (int j = 0; j < adcl; j++) {
         h_tmp->SetBinContent(j + 1, channel.adc().at(j) - baseline);
       }
       sf->cd();

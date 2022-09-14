@@ -8,14 +8,15 @@ specified_name=`basename $2`
 
 tmp_userfile_list=`ls ${2}*.root`
 filenum=`echo "$tmp_userfile_list" | wc -l`
-jw_N=100
+# find that 200 is also OK, slow is expected
+jw_N=201
 if [[ $filenum -gt $jw_N ]];then
     for((i=0;i<=$(($filenum/$jw_N));i++))
     do
         # hadd ${i}.root `sed -n '$((i*100)),$((i*100+100))p' tmp_userfile.list`
-        hadd ${specified_name}_tmp_${i}.root `echo "$tmp_userfile_list" | tail -n +$((i*jw_N)) | head -n $jw_N`
+        hadd ${specified_name}_tmp_${i}.root `echo "$tmp_userfile_list" | tail -n +$((i*jw_N+1)) | head -n $jw_N`
         if [[ -f "${specified_name}_tmp_${i}.root" ]];then
-            rm -rf `echo "$tmp_userfile_list" | tail -n +$((i*jw_N)) | head -n $jw_N`
+            rm -rf `echo "$tmp_userfile_list" | tail -n +$((i*jw_N+1)) | head -n $jw_N`
         fi
     done
     hadd -f $1 ${specified_name}_tmp_*.root

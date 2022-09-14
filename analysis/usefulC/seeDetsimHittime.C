@@ -4,10 +4,12 @@ void seeDetsimHittime(){
     gROOT->ProcessLine("#include <vector>");
 
     std::string path[2] = {
-        "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/00/ACU-CLS/Ge68/Ge68_0_0_0/detsim/user-root",
-        "/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU-CLS/Ge68/Ge68_0_0_0/detsim/user-root"
+        //"/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/00/ACU-CLS/Ge68/Ge68_0_0_0/detsim/user-root",
+        //"/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU-CLS/Ge68/Ge68_0_0_0/detsim/user-root"
+		"root://junoeos01.ihep.ac.cn//eos/juno/valprod/valprod0/J22.1.0-rc0/ACU-CLS/Ge68/Ge68_0_0_0/detsim/user-root",
+		"root://junoeos01.ihep.ac.cn//eos/juno/valprod/valprod0/J22.1.0-rc0-NEW/ACU-CLS/Ge68/Ge68_0_0_0/detsim/user-root",
     };
-    std::string fsname[2] = {"00","11"};
+    std::string fsname[2] = {"00","22"};
     TH1D *ht1D[2];
     
     for(int f=0;f<2;++f){
@@ -20,23 +22,24 @@ void seeDetsimHittime(){
         ht1D[f] = new TH1D(name,name,3000,0,3000);
 
         cout<< "total event: "<<chain->GetEntries()<<endl;
-        // for(int i=0;i<chain->GetEntries(); ++i){
-        for(int i=0;i<5000; ++i){
+        for(int i=0;i<chain->GetEntries(); ++i){
+        //for(int i=0;i<5000; ++i){
             htime->clear();
             if(i%1000==0) cout<<"Proccessing "<<i<<endl;
             chain->GetEntry(i);
             for(int j=0;j<htime->size();++j){
                 ht1D[f]->Fill(htime->at(j));
             }
+			ht1D[f]->Scale(1./ht1D[f]->Integral());
         }
         delete htime;
         chain->~TChain();
     }
     TCanvas *c = new TCanvas("c","c",1920,1080);
     c->cd();
-    ht1D[0]->Draw();
+    ht1D[0]->Draw("HIST");
     ht1D[1]->SetLineColor(2);
-    ht1D[1]->DrawCopy("SAME");
+    ht1D[1]->DrawCopy("SAME HIST");
 
     TCanvas *c1 = new TCanvas("c1","c1",1920,1080);
     c1->cd();

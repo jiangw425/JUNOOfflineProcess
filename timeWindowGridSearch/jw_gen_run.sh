@@ -64,8 +64,8 @@ recQTMLE_gen(){
     Opt_ERec="--method energy-point --enableQTimePdf --enableUseEkMap --enableLTSPEs --enableTimeInfo"
     if [[ $sname == "e+" ]];then
         inputroot="/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/e+/e+_Uniform/${e_energy}MeV/calib/root/calib-${n}.root"
-    elif [[ $sname == "Ge68" ]];then
-        inputroot="/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU-CLS/Ge68/Ge68_0_0_0/calib/root/calib-${n}.root"
+    elif [[ $sname == "Ge68" ]] || [[ $sname == "AmC" ]];then
+        inputroot="/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/22/ACU-CLS/${sname}/${sname}_0_0_0/calib/root/calib-${n}.root"
     fi
     echo "source ${localenv}" >> ${name}
     echo "(time python \${TUTORIALROOT}/share/tut_calib2rec.py --evtmax ${evtPerJob} --gdml ${Opt_ERec} --RecMapPath ${recMapPath} --input ${inputroot} ${commonOut} --SignalWindowL SIGNALWINDOW --elec yes) >& log/log-${sim_type}-${n}.txt" >> ${name}
@@ -103,7 +103,7 @@ do
     if [[ $sname == "e+" ]];then
         name=run/SIGNALWINDOW_${sname}_${e_energy}MeV_${sim_type}_${n}.sh
     else
-        name=run/${sname}_${pos_xyz}_${sim_type}_${n}.sh
+        name=run/SIGNALWINDOW_${sname}_${pos_xyz}_${sim_type}_${n}.sh
     fi
     seed=$(($seed_start+$n))
     echo "#!/bin/bash" > $name
@@ -152,8 +152,8 @@ do
 
     if [[ $sname == "e+" ]];then
         tmpEOSjw="root://junoeos01.ihep.ac.cn//eos/juno/user/jiangw/TS/SIGNALWINDOW/${e_energy}MeV/${sim_type}/"
-    elif [[ $sname == "Ge68" ]];then
-        tmpEOSjw="root://junoeos01.ihep.ac.cn//eos/juno/user/jiangw/TS/SIGNALWINDOW/Ge68/${sim_type}/"
+    elif [[ $sname == "Ge68" ]] || [[ $sname == "AmC" ]];then
+        tmpEOSjw="root://junoeos01.ihep.ac.cn//eos/juno/user/jiangw/TS/SIGNALWINDOW/${sname}/${sim_type}/"
     fi
 	
     commonOut="--output ${tmpEOSjw}root/${sim_type}-${n}.root --user-output ${tmpEOSjw}user-root/user-${sim_type}-${n}.root"

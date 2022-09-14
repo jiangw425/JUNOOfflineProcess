@@ -10,9 +10,12 @@ else
     memOpt=""
 fi
 
-subdirs=`cat ${sim_type}_subdirs.txt | grep _0_0_0`
-sed -i '/_0_0_0/d' ${sim_type}_subdirs.txt
+if [[ ! -f ${sim_type}_subdirs.txt ]];then
+    echo "${sim_type}_subdirs.txt not exist ! "
+    exit 1
+fi
 
+subdirs=`cat ${sim_type}_subdirs.txt | grep _0_0_0`
 for dir in $subdirs
 do
     echo $dir
@@ -27,5 +30,5 @@ do
     fi
     cd $path0
 done
-
+sed -i '/_0_0_0/d' ${sim_type}_subdirs.txt
 # rm $tmpname

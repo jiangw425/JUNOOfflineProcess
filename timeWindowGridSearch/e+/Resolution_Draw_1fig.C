@@ -1,5 +1,5 @@
 #include<vector>
-const int eNum = 6;
+const int eNum = 8;
 const int cNum = 1;//3: QTMLE,QLH,TLH?
 const bool enableUpdateBin = true;
 double energyscale = 1.;
@@ -40,8 +40,8 @@ void Resolution_Draw_1fig() {
     double EColor[10] = {1, 4, 6, 801, 417, 6, 3, 4};
     double EMarker[10] = {20, 21, 23, 22, 33, 23,20};
     // double P[eNum] = {0, 1., 2., 3., 4., 5., 6., 7., 8.};
-    double P[eNum] = {0, 2., 3., 4., 5., 8.};
-    int jw[eNum] = {0, 2, 3, 4, 5, 8};
+    double P[eNum] = {0,0.5,1., 2., 3., 4., 5., 8.};
+    TString jw[eNum] = {"0","0.5","1","2", "3", "4", "5", "8"};
     double TrueEnergy[eNum] = {};
     for(int i=0;i<eNum;i++) {
         TrueEnergy[i] = P[i] + 1.022;
@@ -136,8 +136,8 @@ void Resolution_Draw_1fig() {
             TH1F* h_E1 = new TH1F(Form("h_E1_%0.2fMeV",TrueEnergy[kNum]),Form("E1_{rec}_%0.2fMeV",TrueEnergy[kNum]), int(binNum[1][ci][kNum]), ra, rb);
             TH1F* h_E2 = new TH1F(Form("h_E2_%0.2fMeV",TrueEnergy[kNum]),Form("E2_{rec}_%0.2fMeV",TrueEnergy[kNum]), int(binNum[2][ci][kNum]), ra, rb);
             TH1F* h_E3 = new TH1F(Form("h_E3_%0.2fMeV",TrueEnergy[kNum]),Form("E3_{rec}_%0.2fMeV",TrueEnergy[kNum]), int(binNum[3][ci][kNum]), ra, rb);
-            TFile* sfile = TFile::Open(recdir+Form("%dMeV/Assemb.root",jw[kNum]),"READ");
-            std::cout<< recdir + Form("%dMeV/Assemb.root",jw[kNum]) <<std::endl;
+            TFile* sfile = TFile::Open(recdir+jw[kNum]+Form("MeV/Assemb.root"),"READ");
+            std::cout<< recdir + jw[kNum] + Form("MeV/Assemb.root") <<std::endl;
 
 
             TTree* stree = (TTree*)sfile->Get("evt");
@@ -252,6 +252,19 @@ void Resolution_Draw_1fig() {
             cout<<"---------- Res ----------:"<<Res[kNum] << '\t' << ResErr[kNum] << std::endl;
             ResOut<<Mean[kNum] << '\t' << MeanErr[kNum] << '\t' << Res[kNum] << '\t' << ResErr[kNum] << std::endl;
 
+            TCanvas *cc = new TCanvas("cc","cc",1600,900);
+            cc->Divide(2,2);
+            // cc->cd(1);  h_E->GetXaxis()->SetRangeUser(Mean[kNum]-1*Res[kNum]*Mean[kNum],   Mean[kNum]+1*Res[kNum]*Mean[kNum]); h_E->Draw();
+            // cc->cd(2);h_E1->GetXaxis()->SetRangeUser(Mean1[kNum]-1*Res1[kNum]*Mean3[kNum],Mean1[kNum]+1*Res1[kNum]*Mean1[kNum]);h_E1->Draw();
+            // cc->cd(3);h_E2->GetXaxis()->SetRangeUser(Mean2[kNum]-1*Res2[kNum]*Mean3[kNum],Mean2[kNum]+1*Res2[kNum]*Mean2[kNum]);h_E2->Draw();
+            // cc->cd(4);h_E3->GetXaxis()->SetRangeUser(Mean3[kNum]-1*Res3[kNum]*Mean3[kNum],Mean3[kNum]+1*Res3[kNum]*Mean3[kNum]);h_E3->Draw();
+            cc->cd(1);  h_E->GetXaxis()->SetRangeUser(Mean[kNum]-1,Mean[kNum]+ 1); h_E->Draw();
+            cc->cd(2);h_E1->GetXaxis()->SetRangeUser(Mean1[kNum]-1,Mean1[kNum]+1);h_E1->Draw();
+            cc->cd(3);h_E2->GetXaxis()->SetRangeUser(Mean2[kNum]-1,Mean2[kNum]+1);h_E2->Draw();
+            cc->cd(4);h_E3->GetXaxis()->SetRangeUser(Mean3[kNum]-1,Mean3[kNum]+1);h_E3->Draw();
+
+            cc->Print(jw[kNum] + Form("MeV_EresFit.png"));
+            cc->~TCanvas();
             delete h_E;
             delete h_E1;
             delete h_E2;

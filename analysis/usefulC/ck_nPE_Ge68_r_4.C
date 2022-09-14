@@ -78,6 +78,7 @@ void ck_nPE_Ge68_r_4()
     double totPE[2][2][nc][CalibPosNum]; // value,ratio | mean,sigma | file | calib pos
 
     for(int t=0;t<nc;++t) for(int i=0;i<CalibPosNum;i++) {
+        if(positionR[1][i]<-17100 || positionR[1][i]>17100) continue;
         TString simFilePath = Form("%s_"+ StrPosX->at(i) + "_" + StrPosY->at(i) + "_" + StrPosZ->at(i) +  "/detsim/user-root/user-detsim-*", Ge68_path[t].c_str());
         TChain *tc = new TChain("evt");
         tc->Add(simFilePath);
@@ -106,24 +107,36 @@ void ck_nPE_Ge68_r_4()
         double mean = func_temp->GetParameter(1);
         totPE[0][0][t][i] = mean;
         totPE[0][1][t][i] = 100*func_temp->GetParameter(2)/mean;
-        cout << i <<"\tmean: " << mean << "\tres: " << totPE[0][1][t][i] << "\tentries: " << tc->GetEntries() <<endl;
+        cout << i << "\t "+StrPosX->at(i) + "_" + StrPosY->at(i) + "_" + StrPosZ->at(i) << "\tmean: " << mean << "\tres: " << totPE[0][1][t][i] << "\tentries: " << tc->GetEntries() <<endl;
         tc->~TChain();
     }
     for(int t=0;t<nc;++t) for(int i=0;i<CalibPosNum;i++) for(int ms=0;ms<2;ms++){
+        if(positionR[1][i]<-17100 || positionR[1][i]>17100) continue;
         totPE[1][ms][t][i] = totPE[0][ms][t][i] / totPE[0][ms][0][i];
     }
 
     TCanvas *c0 = new TCanvas("c0","c0",1600,900);
     c0->Divide(2,2);
     TGraph *nPE_r[2][2][nc];
-    float range[2][2][2] = {{{1100,1700},{2.5,5}},{{0.8,1.2},{0.8,1.2}}};
+    float range[2][2][2] = {{{1100,1700},{2.5,3.5}},{{0.9,1.1},{0.9,1.1}}};
     for(int vr=0;vr<2;vr++) for(int ms=0;ms<2;ms++){
         c0->cd(ms+1+2*vr);
         for(int t=0;t<nc;++t){
-            nPE_r[vr][ms][t] = new TGraph(CalibPosNum,positionR3[1],totPE[vr][ms][t]);
+            // nPE_r[vr][ms][t] = new TGraph(CalibPosNum,positionR3[1],totPE[vr][ms][t]);
+            nPE_r[vr][ms][t] = new TGraph();
+            int counter = 0;
+            for(int i=0;i<CalibPosNum;i++){
+                if(positionR[1][i]<-17100 || positionR[1][i]>17100) continue;
+                nPE_r[vr][ms][t]->SetPoint(counter,positionR3[1][i],totPE[vr][ms][t][i]);
+                counter++;
+            }
             nPE_r[vr][ms][t]->SetLineColor(color[t]);
-            if(t==0){   nPE_r[vr][ms][t]->GetYaxis()->SetRangeUser(range[vr][ms][0],range[vr][ms][1]);}
-            nPE_r[vr][ms][t]->Draw("SAME AC*");
+            if(t==0){
+                nPE_r[vr][ms][t]->GetXaxis()->SetTitle("Z^{3}/m^{3}");
+                nPE_r[vr][ms][t]->GetYaxis()->SetRangeUser(range[vr][ms][0],range[vr][ms][1]);
+                nPE_r[vr][ms][t]->Draw("AC");
+            }
+            else nPE_r[vr][ms][t]->Draw("SAME C");
         }
     }
 }
