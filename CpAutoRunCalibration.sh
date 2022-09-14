@@ -1,10 +1,10 @@
 #!/bin/bash
-junoenv=/cvmfs/juno.ihep.ac.cn/centos7_amd64_gcc830/Pre-Release/J21v1r0-Pre2/setup.sh
-yourenv=/junofs/users/jiangw/J21v1r0-Pre2/bashrc
-elecpath=/junofs/production/data-production/Pre-Releases/J21v1r0-Pre2/11
-adcl=1250
-dnstart=725
-dnend=975
+junoenv=/cvmfs/juno.ihep.ac.cn/centos7_amd64_gcc830/Pre-Release/J22.1.0-rc4/setup.sh
+yourenv=/junofs/users/jiangw/J22.1.0-rc4/bashrc
+elecpath=root://junoeos01.ihep.ac.cn//eos/juno/valprod/valprod0/J22.1.0-rc4
+adcl=1000
+dnstart=0
+dnend=220
 ### --- Please modify the variables above. --- ###
 ###  junoenv: official juno offline env setup  ###
 ###  yourenv: your relative copied from trunk  ###
@@ -14,7 +14,7 @@ envpath=`echo ${yourenv%/*}`
 # nameflag=`echo $junoenv | grep -o "[J][0-9]\+[v][0-9][r][0-9][-][P][r][e][0-9]"`
 # envpath=/junofs/users/jiangw/J21v1r0-Pre0
 ntimesrms="--NTimesRMS 2.2"
-copyPath=/junofs/users/jiangw/GitCode/JUNOOfflineProcess/calib/new_FFT
+copyPath=/junofs/users/jiangw/GitCode/JUNOOfflineProcess/calib/rc4_FFT
 dnlen=$(($dnend-$dnstart))
 
 rsync -av $copyPath/* .
@@ -22,16 +22,20 @@ rsync $copyPath/../autoRun_calibration.sh .
 mkdir -p CppFiles
 cd CppFiles
 # cp ${copyPath}/CppFiles/* .
-sed "s#ADCL#${adcl}#g"   ${copyPath}/CppFiles/drawamp2.C     > drawamp2.C
-sed "s#ADCL#${adcl}#g"   ${copyPath}/CppFiles/extractWaves.C > extractWaves.C
-sed "s#ADCL#${adcl}#g"   ${copyPath}/CppFiles/filterWaves.C  > filterWaves.C
-sed "s#ADCL#${adcl}#g"   ${copyPath}/CppFiles/get_raw2D.C    > get_raw2D.C
-sed "s#ADCL#${adcl}#g"   ${copyPath}/CppFiles/getFilter.C    > getFilter.C
-sed "s#ADCL#${adcl}#g"   ${copyPath}/CppFiles/script2.C      > script2.C
-sed "s#ADCL#${adcl}#g"   ${copyPath}/CppFiles/seeHitTime.C   > seeHitTime.C
-sed "s#DNLEN#${dnlen}#g" ${copyPath}/CppFiles/calib_dn.C     > calib_dn.C
-sed "s#DNLEN#${dnlen}#g" ${copyPath}/CppFiles/script3.C      >  script3.C
-sed -e "s#DNLEN#${dnlen}#g" -e "s#ADCL#${adcl}#g" ${copyPath}/CppFiles/script4.C  >  script4.C
+sed -e "s#INCLUDE#$(pwd)/include/myinclude.h#g" ${copyPath}/CppFiles/calib_gain.C  > calib_gain.C
+sed -e "s#INCLUDE#$(pwd)/include/myinclude.h#g" ${copyPath}/CppFiles/drawamp.C     > drawamp.C
+sed -e "s#INCLUDE#$(pwd)/include/myinclude.h#g" ${copyPath}/CppFiles/drawTFS.C     > drawTFS.C
+sed -e "s#INCLUDE#$(pwd)/include/myinclude.h#g" ${copyPath}/CppFiles/rooRectimeH.C > rooRectimeH.C
+sed -e "s#INCLUDE#$(pwd)/include/myinclude.h#g" -e "s#ADCL#${adcl}#g"   ${copyPath}/CppFiles/drawamp2.C     > drawamp2.C
+sed -e "s#INCLUDE#$(pwd)/include/myinclude.h#g" -e "s#ADCL#${adcl}#g"   ${copyPath}/CppFiles/extractWaves.C > extractWaves.C
+sed -e "s#INCLUDE#$(pwd)/include/myinclude.h#g" -e "s#ADCL#${adcl}#g"   ${copyPath}/CppFiles/filterWaves.C  > filterWaves.C
+sed -e "s#INCLUDE#$(pwd)/include/myinclude.h#g" -e "s#ADCL#${adcl}#g"   ${copyPath}/CppFiles/get_raw2D.C    > get_raw2D.C
+sed -e "s#INCLUDE#$(pwd)/include/myinclude.h#g" -e "s#ADCL#${adcl}#g"   ${copyPath}/CppFiles/getFilter.C    > getFilter.C
+sed -e "s#INCLUDE#$(pwd)/include/myinclude.h#g" -e "s#ADCL#${adcl}#g"   ${copyPath}/CppFiles/script2.C      > script2.C
+sed -e "s#INCLUDE#$(pwd)/include/myinclude.h#g" -e "s#ADCL#${adcl}#g"   ${copyPath}/CppFiles/seeHitTime.C   > seeHitTime.C
+sed -e "s#INCLUDE#$(pwd)/include/myinclude.h#g" -e "s#DNLEN#${dnlen}#g" ${copyPath}/CppFiles/calib_dn.C     > calib_dn.C
+sed -e "s#INCLUDE#$(pwd)/include/myinclude.h#g" -e "s#DNLEN#${dnlen}#g" ${copyPath}/CppFiles/script3.C      >  script3.C
+sed -e "s#INCLUDE#$(pwd)/include/myinclude.h#g" -e "s#DNLEN#${dnlen}#g" -e "s#ADCL#${adcl}#g" ${copyPath}/CppFiles/script4.C  >  script4.C
 cd - >/dev/null 2>&1
 
 mkdir -p BashFiles
